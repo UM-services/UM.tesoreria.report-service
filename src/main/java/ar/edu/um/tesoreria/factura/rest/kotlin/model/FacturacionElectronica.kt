@@ -34,6 +34,8 @@ data class FacturacionElectronica(
     var fechaRecibo: OffsetDateTime? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "UTC")
     var fechaVencimientoCae: OffsetDateTime? = null,
+    var enviada: Byte = 0,
+    var retries: Int = 0,
 
     @OneToOne(optional = true)
     @JoinColumn(name = "chequeraPagoId", insertable = false, updatable = false)

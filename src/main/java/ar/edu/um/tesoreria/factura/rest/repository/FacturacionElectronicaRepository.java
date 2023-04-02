@@ -11,4 +11,5 @@ public interface FacturacionElectronicaRepository extends JpaRepository<Facturac
 
     public Optional<FacturacionElectronica> findByFacturacionElectronicaId(Long facturacionElectronicaId);
 
+    public Optional<FacturacionElectronica> findTopByEnviadaAndRetriesLessThanOrderByFacturacionElectronicaId(Byte enviada, Integer retries);
 }

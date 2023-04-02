@@ -15,4 +15,14 @@ public class FacturacionElectronicaService {
     public FacturacionElectronica findByFacturacionElectronicaId(Long facturacionElectronicaId) {
         return repository.findByFacturacionElectronicaId(facturacionElectronicaId).orElseThrow(() -> new FacturacionElectronicaException(facturacionElectronicaId));
     }
+
+    public FacturacionElectronica findNextPendiente() {
+        return repository.findTopByEnviadaAndRetriesLessThanOrderByFacturacionElectronicaId((byte) 0, 3).orElseThrow(() -> new FacturacionElectronicaException());
+    }
+
+    public FacturacionElectronica update(FacturacionElectronica facturacionElectronica) {
+        facturacionElectronica = repository.save(facturacionElectronica);
+        return facturacionElectronica;
+    }
+
 }

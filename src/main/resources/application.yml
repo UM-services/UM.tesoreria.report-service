@@ -11,8 +11,8 @@ app:
   open-in-view: true
   port: 8301
   mail:
-    username: chequeras@um.edu.ar
-    password: 8VlfKS44o8YbOutcm2VT
+    username: fe1.um@um.edu.ar
+    password: F4ctur4UM.23
 
 server:
   port: ${app.port}

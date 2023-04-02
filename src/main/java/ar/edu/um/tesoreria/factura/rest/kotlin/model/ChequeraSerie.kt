@@ -94,12 +94,8 @@ data class ChequeraSerie(
 
     @OneToOne(optional = true)
     @JoinColumns(
-        JoinColumn(
-            name = "chs_per_id",
-            referencedColumnName = "dom_per_id",
-            insertable = false,
-            updatable = false
-        ), JoinColumn(name = "chs_doc_id", referencedColumnName = "dom_doc_id", insertable = false, updatable = false)
+        JoinColumn(name = "chs_per_id", referencedColumnName = "dom_per_id", insertable = false, updatable = false),
+        JoinColumn(name = "chs_doc_id", referencedColumnName = "dom_doc_id", insertable = false, updatable = false),
     )
     var domicilio: Domicilio? = null,
 
