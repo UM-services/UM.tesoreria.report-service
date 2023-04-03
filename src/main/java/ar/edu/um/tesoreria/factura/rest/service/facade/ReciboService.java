@@ -726,9 +726,15 @@ public class ReciboService {
         return MessageFormat.format("Envío de Correo Ok!! {0}", json);
     }
 
-    public String sendNext() throws MessagingException {
+    public String sendNext() {
         FacturacionElectronica facturacionElectronica = facturacionElectronicaService.findNextPendiente();
-        return this.send(facturacionElectronica.getFacturacionElectronicaId(), facturacionElectronica);
+        try {
+            return this.send(facturacionElectronica.getFacturacionElectronicaId(), facturacionElectronica);
+        } catch (MessagingException e) {
+            facturacionElectronica.setRetries(facturacionElectronica.getRetries() + 1);
+            facturacionElectronicaService.update(facturacionElectronica);
+            return "ERROR: Problemas de Envío";
+        }
     }
 }
 

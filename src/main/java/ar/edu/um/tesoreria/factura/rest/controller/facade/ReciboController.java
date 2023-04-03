@@ -45,7 +45,7 @@ public class ReciboController {
     }
 
     @GetMapping("/sendNext")
-    public ResponseEntity<String> sendNext() throws MessagingException {
+    public ResponseEntity<String> sendNext() {
         return new ResponseEntity<String>(service.sendNext(), HttpStatus.OK);
     }
 
