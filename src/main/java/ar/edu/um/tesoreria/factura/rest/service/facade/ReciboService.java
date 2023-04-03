@@ -5,6 +5,8 @@ import ar.edu.um.tesoreria.factura.rest.service.ChequeraCuotaService;
 import ar.edu.um.tesoreria.factura.rest.service.ChequeraPagoService;
 import ar.edu.um.tesoreria.factura.rest.service.ChequeraSerieService;
 import ar.edu.um.tesoreria.factura.rest.service.FacturacionElectronicaService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -714,9 +716,14 @@ public class ReciboService {
 
         javaMailSender.send(message);
         facturacionElectronica.setEnviada((byte) 1);
-        facturacionElectronicaService.update(facturacionElectronica);
-
-        return "Envío de Correo Ok!!";
+        facturacionElectronica = facturacionElectronicaService.update(facturacionElectronica);
+        String json = "";
+        try {
+            json = JsonMapper.builder().findAndAddModules().build().writerWithDefaultPrettyPrinter().writeValueAsString(facturacionElectronica);
+        } catch (JsonProcessingException e) {
+            json = "";
+        }
+        return MessageFormat.format("Envío de Correo Ok!! {0}", json);
     }
 
     public String sendNext() throws MessagingException {
