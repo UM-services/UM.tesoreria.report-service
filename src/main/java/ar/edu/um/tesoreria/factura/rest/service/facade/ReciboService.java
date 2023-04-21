@@ -1,10 +1,8 @@
 package ar.edu.um.tesoreria.factura.rest.service.facade;
 
+import ar.edu.um.tesoreria.factura.rest.exception.ChequeraFacturacionElectronicaException;
 import ar.edu.um.tesoreria.factura.rest.kotlin.model.*;
-import ar.edu.um.tesoreria.factura.rest.service.ChequeraCuotaService;
-import ar.edu.um.tesoreria.factura.rest.service.ChequeraPagoService;
-import ar.edu.um.tesoreria.factura.rest.service.ChequeraSerieService;
-import ar.edu.um.tesoreria.factura.rest.service.FacturacionElectronicaService;
+import ar.edu.um.tesoreria.factura.rest.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.zxing.BarcodeFormat;
@@ -58,6 +56,9 @@ public class ReciboService {
     @Autowired
     private JavaMailSender javaMailSender;
 
+    @Autowired
+    private ChequeraFacturacionElectronicaService chequeraFacturacionElectronicaService;
+
     private void createQRImage(File qrFile, String qrCodeText, int size, String fileType)
             throws WriterException, IOException {
         // Create the ByteMatrix for the QR-Code that encodes the given String
@@ -97,6 +98,12 @@ public class ReciboService {
         ChequeraCuota chequeraCuota = chequeraCuotaService.findByUnique(chequeraPago.getFacultadId(), chequeraPago.getTipoChequeraId(), chequeraPago.getChequeraSerieId(), chequeraPago.getProductoId(), chequeraPago.getAlternativaId(), chequeraPago.getCuotaId());
         if (chequeraSerie == null) {
             chequeraSerie = chequeraSerieService.findByUnique(chequeraPago.getFacultadId(), chequeraPago.getTipoChequeraId(), chequeraPago.getChequeraSerieId());
+        }
+        ChequeraFacturacionElectronica chequeraFacturacionElectronica = null;
+        try {
+            chequeraFacturacionElectronica = chequeraFacturacionElectronicaService.findByChequeraId(chequeraSerie.getChequeraId());
+        } catch (ChequeraFacturacionElectronicaException e) {
+            chequeraFacturacionElectronica = new ChequeraFacturacionElectronica();
         }
 
         String path = environment.getProperty("path.facturas");
@@ -143,7 +150,7 @@ public class ReciboService {
         for (int copia = 0; copia < copias; copia++) {
             filenames.add(filename = path + facturacionElectronicaId + "." + titulo_copias[copia].toLowerCase() + ".pdf");
 
-            makePage(filename, titulo_copias[copia], comprobante, facturacionElectronica, chequeraCuota, chequeraPago, chequeraSerie, imageQr);
+            makePage(filename, titulo_copias[copia], comprobante, facturacionElectronica, chequeraCuota, chequeraPago, chequeraSerie, chequeraFacturacionElectronica, imageQr);
         }
 
         try {
@@ -177,7 +184,7 @@ public class ReciboService {
     }
 
     private void makePage(String filename, String titulo, Comprobante comprobante,
-                          FacturacionElectronica facturacionElectronica, ChequeraCuota chequeraCuota, ChequeraPago chequeraPago, ChequeraSerie chequeraSerie, Image imageQr) {
+                          FacturacionElectronica facturacionElectronica, ChequeraCuota chequeraCuota, ChequeraPago chequeraPago, ChequeraSerie chequeraSerie, ChequeraFacturacionElectronica chequeraFacturacionElectronica, Image imageQr) {
         PdfPTable table = null;
         PdfPCell cell = null;
 
@@ -651,6 +658,12 @@ public class ReciboService {
             facturacionElectronica = facturacionElectronicaService.findByFacturacionElectronicaId(facturacionElectronicaId);
         }
         ChequeraSerie chequeraSerie = chequeraSerieService.findByUnique(facturacionElectronica.getChequeraPago().getFacultadId(), facturacionElectronica.getChequeraPago().getTipoChequeraId(), facturacionElectronica.getChequeraPago().getChequeraSerieId());
+        ChequeraFacturacionElectronica chequeraFacturacionElectronica = null;
+        try {
+            chequeraFacturacionElectronica = chequeraFacturacionElectronicaService.findByChequeraId(chequeraSerie.getChequeraId());
+        } catch (ChequeraFacturacionElectronicaException e) {
+            chequeraFacturacionElectronica = new ChequeraFacturacionElectronica();
+        }
 
         // Genera PDF
         String filenameRecibo = this.generatePdf(facturacionElectronicaId, facturacionElectronica, chequeraSerie);
@@ -692,10 +705,15 @@ public class ReciboService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         List<String> addresses = new ArrayList<String>();
 
-        if (!domicilio.getEmailPersonal().equals(""))
+        if (!domicilio.getEmailPersonal().equals("")) {
             addresses.add(domicilio.getEmailPersonal());
-        if (!domicilio.getEmailInstitucional().equals(""))
+        }
+        if (!domicilio.getEmailInstitucional().equals("")) {
             addresses.add(domicilio.getEmailInstitucional());
+        }
+        if (!chequeraFacturacionElectronica.getEmail().equals("")) {
+            addresses.add(chequeraFacturacionElectronica.getEmail());
+        }
 
 //		addresses.add("daniel.quinterospinto@gmail.com");
 
