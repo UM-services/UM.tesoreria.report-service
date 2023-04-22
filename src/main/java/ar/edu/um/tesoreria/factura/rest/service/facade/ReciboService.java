@@ -741,7 +741,7 @@ public class ReciboService {
         } catch (JsonProcessingException e) {
             json = "";
         }
-        return MessageFormat.format("Envío de Correo Ok!! {0}", json);
+        return "Envío de Correo Ok!!";
     }
 
     public String sendNext() {
