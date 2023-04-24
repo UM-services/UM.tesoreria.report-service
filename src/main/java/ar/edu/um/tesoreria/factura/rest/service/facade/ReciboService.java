@@ -291,8 +291,8 @@ public class ReciboService {
             paragraph.setAlignment(Element.ALIGN_LEFT);
             paragraph.setIndentationLeft(20);
             cell.addElement(paragraph);
-            paragraph = new Paragraph(new Phrase("Documento: ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
-            paragraph.add(new Phrase(facturacionElectronica.getPersonaId().toString(), new Font(Font.HELVETICA, 8, Font.BOLD)));
+            paragraph = new Paragraph(new Phrase(facturacionElectronica.getTipoDocumento() + ": ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
+            paragraph.add(new Phrase(facturacionElectronica.getCuit(), new Font(Font.HELVETICA, 8, Font.BOLD)));
             paragraph.add(new Phrase("                          IVA: ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
             String[] condiciones = {"Responsable Inscripto", "Consumidor Final", "Monotributista",
                     "Responsable No Inscripto", "Exento", "Exportación"};
@@ -320,7 +320,7 @@ public class ReciboService {
             cell.addElement(paragraph);
             table.addCell(cell);
             cell = new PdfPCell();
-            paragraph = new Paragraph("Artículo", new Font(Font.HELVETICA, 8, Font.BOLD));
+            paragraph = new Paragraph("Detalle", new Font(Font.HELVETICA, 8, Font.BOLD));
             paragraph.setAlignment(Element.ALIGN_LEFT);
             cell.addElement(paragraph);
             table.addCell(cell);
@@ -343,11 +343,12 @@ public class ReciboService {
 
             Integer lineas = 24;
 
-            lineas--;
             table = new PdfPTable(5);
             table.setWidthPercentage(100);
             table.setWidths(new int[]{20, 50, 7, 12, 12});
 
+            // Producto
+            lineas--;
             cell = new PdfPCell();
             cell.setBorder(Rectangle.NO_BORDER);
             DecimalFormat decimalFormat = new DecimalFormat("###0");
@@ -359,8 +360,8 @@ public class ReciboService {
 
             cell = new PdfPCell();
             cell.setBorder(Rectangle.NO_BORDER);
-            paragraph = new Paragraph(new Phrase("Tipo: ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
-            paragraph.add(new Phrase(chequeraCuota.getProducto().getNombre(), new Font(Font.HELVETICA, 8, Font.BOLD)));
+            paragraph = new Paragraph(new Phrase("Alumno: ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
+            paragraph.add(new Phrase(chequeraSerie.getPersona().getApellidoNombre(), new Font(Font.HELVETICA, 8, Font.BOLD)));
             paragraph.setAlignment(Element.ALIGN_LEFT);
             cell.addElement(paragraph);
             table.addCell(cell);
@@ -387,6 +388,44 @@ public class ReciboService {
             paragraph = new Paragraph(
                     new DecimalFormat("#,##0.00").format(chequeraPago.getImporte()),
                     new Font(Font.HELVETICA, 8, Font.NORMAL));
+            paragraph.setAlignment(Element.ALIGN_RIGHT);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            // Producto
+            lineas--;
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph("", new Font(Font.HELVETICA, 8, Font.NORMAL));
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph(new Phrase("Tipo: ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
+            paragraph.add(new Phrase(chequeraCuota.getProducto().getNombre(), new Font(Font.HELVETICA, 8, Font.BOLD)));
+            paragraph.setAlignment(Element.ALIGN_LEFT);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph("", new Font(Font.HELVETICA, 8, Font.NORMAL));
+            paragraph.setAlignment(Element.ALIGN_RIGHT);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph("", new Font(Font.HELVETICA, 8, Font.NORMAL));
+            paragraph.setAlignment(Element.ALIGN_RIGHT);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph("", new Font(Font.HELVETICA, 8, Font.NORMAL));
             paragraph.setAlignment(Element.ALIGN_RIGHT);
             cell.addElement(paragraph);
             table.addCell(cell);
@@ -561,6 +600,46 @@ public class ReciboService {
             cell.setBorder(Rectangle.NO_BORDER);
             paragraph = new Paragraph(new Phrase("Periodo: ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
             paragraph.add(new Phrase(MessageFormat.format("{0}/{1}", chequeraCuota.getMes(), decimalFormat.format(chequeraCuota.getAnho())), new Font(Font.HELVETICA, 8, Font.BOLD)));
+            paragraph.setAlignment(Element.ALIGN_LEFT);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph("", new Font(Font.HELVETICA, 8, Font.NORMAL));
+            paragraph.setAlignment(Element.ALIGN_RIGHT);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph("", new Font(Font.HELVETICA, 8, Font.NORMAL));
+            paragraph.setAlignment(Element.ALIGN_RIGHT);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph("", new Font(Font.HELVETICA, 8, Font.NORMAL));
+            paragraph.setAlignment(Element.ALIGN_RIGHT);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            // Fecha Pago
+            lineas--;
+
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph("", new Font(Font.HELVETICA, 8, Font.NORMAL));
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+            cell.addElement(paragraph);
+            table.addCell(cell);
+
+            cell = new PdfPCell();
+            cell.setBorder(Rectangle.NO_BORDER);
+            paragraph = new Paragraph(new Phrase("Fecha Pago: ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
+            paragraph.add(new Phrase(chequeraPago.getFecha()
+                    .format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), new Font(Font.HELVETICA, 8, Font.BOLD)));
             paragraph.setAlignment(Element.ALIGN_LEFT);
             cell.addElement(paragraph);
             table.addCell(cell);
