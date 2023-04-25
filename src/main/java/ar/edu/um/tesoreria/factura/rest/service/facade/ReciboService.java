@@ -826,10 +826,18 @@ public class ReciboService {
     public String sendNext() {
         FacturacionElectronica facturacionElectronica = facturacionElectronicaService.findNextPendiente();
         try {
+            log.info("SendNext: {}", JsonMapper.builder().findAndAddModules().build().writerWithDefaultPrettyPrinter().writeValueAsString(facturacionElectronica));
+        } catch (JsonProcessingException e) {
+        }
+        try {
             return this.send(facturacionElectronica.getFacturacionElectronicaId(), facturacionElectronica);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             facturacionElectronica.setRetries(facturacionElectronica.getRetries() + 1);
-            facturacionElectronicaService.update(facturacionElectronica);
+            facturacionElectronica = facturacionElectronicaService.update(facturacionElectronica);
+            try {
+                log.info("SendError: {}", JsonMapper.builder().findAndAddModules().build().writerWithDefaultPrettyPrinter().writeValueAsString(facturacionElectronica));
+            } catch (JsonProcessingException j) {
+            }
             return "ERROR: Problemas de Envío";
         }
     }
