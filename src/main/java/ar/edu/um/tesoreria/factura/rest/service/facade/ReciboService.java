@@ -293,11 +293,9 @@ public class ReciboService {
             cell.addElement(paragraph);
             paragraph = new Paragraph(new Phrase(facturacionElectronica.getTipoDocumento() + ": ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
             paragraph.add(new Phrase(facturacionElectronica.getCuit(), new Font(Font.HELVETICA, 8, Font.BOLD)));
-            paragraph.add(new Phrase("                          IVA: ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
-            String[] condiciones = {"Responsable Inscripto", "Consumidor Final", "Monotributista",
-                    "Responsable No Inscripto", "Exento", "Exportación"};
+            paragraph.add(new Phrase("                Condición IVA: ", new Font(Font.HELVETICA, 8, Font.NORMAL)));
             paragraph
-                    .add(new Phrase("Consumidor Final", new Font(Font.HELVETICA, 8, Font.BOLD)));
+                    .add(new Phrase(facturacionElectronica.getCondicionIva(), new Font(Font.HELVETICA, 8, Font.BOLD)));
             paragraph.setAlignment(Element.ALIGN_LEFT);
             paragraph.setIndentationLeft(20);
             cell.addElement(paragraph);
