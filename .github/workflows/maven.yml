@@ -32,7 +32,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build & push Docker image
         env:
-          VERSION: 7.6.13
+          VERSION: 9.6.14
         with:
           image: dqmdz/um.tesoreria.factura
           tags: ${VERSION}, latest, "${GITHUB_REF#refs/heads/}.$(git rev-parse --short ${GITHUB_SHA})"

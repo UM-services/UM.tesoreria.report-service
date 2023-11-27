@@ -41,7 +41,7 @@ public class ReciboController {
 
     @GetMapping("/send/{facturacionElectronicaId}")
     public ResponseEntity<String> send(@PathVariable Long facturacionElectronicaId) throws MessagingException {
-        return new ResponseEntity<String>(service.send(facturacionElectronicaId, null), HttpStatus.OK);
+        return new ResponseEntity<>(service.send(facturacionElectronicaId, null), HttpStatus.OK);
     }
 
     @GetMapping("/sendNext")

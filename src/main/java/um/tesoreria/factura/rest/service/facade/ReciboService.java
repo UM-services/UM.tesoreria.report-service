@@ -1,5 +1,6 @@
 package um.tesoreria.factura.rest.service.facade;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import um.tesoreria.factura.rest.exception.ChequeraFacturacionElectronicaException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -15,17 +16,13 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import um.tesoreria.factura.rest.kotlin.model.*;
-import um.tesoreria.factura.rest.service.ChequeraCuotaService;
-import um.tesoreria.factura.rest.service.ChequeraFacturacionElectronicaService;
-import um.tesoreria.factura.rest.service.ChequeraSerieService;
-import um.tesoreria.factura.rest.service.FacturacionElectronicaService;
+import um.tesoreria.factura.rest.service.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -44,23 +41,28 @@ import java.util.List;
 @Slf4j
 public class ReciboService {
 
-    @Autowired
-    private Environment environment;
+    private final Environment environment;
+
+    private final FacturacionElectronicaService facturacionElectronicaService;
+
+    private final ChequeraCuotaService chequeraCuotaService;
+
+    private final ChequeraSerieService chequeraSerieService;
+
+    private final JavaMailSender javaMailSender;
+
+    private final ChequeraFacturacionElectronicaService chequeraFacturacionElectronicaService;
 
     @Autowired
-    private FacturacionElectronicaService facturacionElectronicaService;
-
-    @Autowired
-    private ChequeraCuotaService chequeraCuotaService;
-
-    @Autowired
-    private ChequeraSerieService chequeraSerieService;
-
-    @Autowired
-    private JavaMailSender javaMailSender;
-
-    @Autowired
-    private ChequeraFacturacionElectronicaService chequeraFacturacionElectronicaService;
+    public ReciboService(Environment environment, FacturacionElectronicaService facturacionElectronicaService, ChequeraCuotaService chequeraCuotaService,
+                         ChequeraSerieService chequeraSerieService, JavaMailSender javaMailSender, ChequeraFacturacionElectronicaService chequeraFacturacionElectronicaService) {
+        this.environment = environment;
+        this.facturacionElectronicaService = facturacionElectronicaService;
+        this.chequeraCuotaService = chequeraCuotaService;
+        this.chequeraSerieService = chequeraSerieService;
+        this.javaMailSender = javaMailSender;
+        this.chequeraFacturacionElectronicaService = chequeraFacturacionElectronicaService;
+    }
 
     private void createQRImage(File qrFile, String qrCodeText, int size, String fileType)
             throws WriterException, IOException {
@@ -144,7 +146,7 @@ public class ReciboService {
             log.debug("Sin Imagen");
         }
 
-        Integer copias = 2;
+        int copias = 2;
 
         String[] titulo_copias = {"ORIGINAL", "DUPLICADO"};
 
@@ -158,23 +160,23 @@ public class ReciboService {
 
         try {
             mergePdf(filename = path + facturacionElectronicaId + ".pdf", filenames);
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (DocumentException ex) {
+            log.info("Document Exception in PDF generation");
+        } catch (IOException ex) {
+            log.info("IOException in PDF generation");
         }
 
         return filename;
     }
 
     private void mergePdf(String filename, List<String> filenames) throws DocumentException, IOException {
-        OutputStream outputStream = new FileOutputStream(new File(filename));
+        OutputStream outputStream = new FileOutputStream(filename);
         Document document = new Document();
         PdfWriter pdfWriter = PdfWriter.getInstance(document, outputStream);
         document.open();
         PdfContentByte pdfContentByte = pdfWriter.getDirectContent();
         for (String name : filenames) {
-            PdfReader pdfReader = new PdfReader(new FileInputStream(new File(name)));
+            PdfReader pdfReader = new PdfReader(new FileInputStream(name));
             for (int pagina = 0; pagina < pdfReader.getNumberOfPages(); ) {
                 document.newPage();
                 PdfImportedPage page = pdfWriter.getImportedPage(pdfReader, ++pagina);
@@ -188,8 +190,8 @@ public class ReciboService {
 
     private void makePage(String filename, String titulo, Comprobante comprobante,
                           FacturacionElectronica facturacionElectronica, ChequeraCuota chequeraCuota, ChequeraPago chequeraPago, ChequeraSerie chequeraSerie, ChequeraFacturacionElectronica chequeraFacturacionElectronica, Image imageQr) {
-        PdfPTable table = null;
-        PdfPCell cell = null;
+        PdfPTable table;
+        PdfPCell cell;
 
         Document document = new Document(new Rectangle(PageSize.A4));
         try {
@@ -342,7 +344,7 @@ public class ReciboService {
             table.addCell(cell);
             document.add(table);
 
-            Integer lineas = 24;
+            int lineas = 24;
 
             table = new PdfPTable(5);
             table.setWidthPercentage(100);
@@ -738,6 +740,8 @@ public class ReciboService {
             facturacionElectronica = facturacionElectronicaService.findByFacturacionElectronicaId(facturacionElectronicaId);
         }
         ChequeraSerie chequeraSerie = chequeraSerieService.findByUnique(facturacionElectronica.getChequeraPago().getFacultadId(), facturacionElectronica.getChequeraPago().getTipoChequeraId(), facturacionElectronica.getChequeraPago().getChequeraSerieId());
+        ChequeraPago chequeraPago = facturacionElectronica.getChequeraPago();
+        String chequeraString = MessageFormat.format("Chequera {0}/{1}/{2}/{3}/{4}/{5}", chequeraPago.getFacultadId(), chequeraPago.getTipoChequeraId(), chequeraPago.getChequeraSerieId(), chequeraPago.getAlternativaId(), chequeraPago.getProductoId(), chequeraPago.getCuotaId());
         ChequeraFacturacionElectronica chequeraFacturacionElectronica = null;
         try {
             chequeraFacturacionElectronica = chequeraFacturacionElectronicaService.findByChequeraId(chequeraSerie.getChequeraId());
@@ -748,10 +752,11 @@ public class ReciboService {
         // Genera PDF
         String filenameRecibo = this.generatePdf(facturacionElectronicaId, facturacionElectronica, chequeraSerie);
         log.info("Filename_recibo -> " + filenameRecibo);
-        if (filenameRecibo.equals("")) {
+        if (filenameRecibo.isEmpty()) {
             facturacionElectronica.setRetries(facturacionElectronica.getRetries() + 1);
             facturacionElectronicaService.update(facturacionElectronica);
-            return "ERROR: Sin Recibo para ENVIAR";
+            String errorString = MessageFormat.format("ERROR: {0} Sin Recibo para ENVIAR", chequeraString);
+            return errorString;
         }
 
         String data = "";
@@ -760,12 +765,14 @@ public class ReciboService {
         if (domicilio == null) {
             facturacionElectronica.setRetries(facturacionElectronica.getRetries() + 1);
             facturacionElectronicaService.update(facturacionElectronica);
-            return "ERROR: Sin Recibo para ENVIAR";
+            String errorString = MessageFormat.format("ERROR: {0} Sin Recibo para ENVIAR", chequeraString);
+            return errorString;
         }
-        if (domicilio.getEmailPersonal().equals("") && domicilio.getEmailInstitucional().equals("")) {
+        if (domicilio.getEmailPersonal().isEmpty() && domicilio.getEmailInstitucional().isEmpty()) {
             facturacionElectronica.setRetries(facturacionElectronica.getRetries() + 1);
             facturacionElectronicaService.update(facturacionElectronica);
-            return "ERROR: Sin correos para ENVIAR";
+            String errorString = MessageFormat.format("ERROR: {0} Sin e-mails para ENVIAR", chequeraString);
+            return errorString;
         }
 
         data = "Estimad@ Estudiante:" + (char) 10;
@@ -809,7 +816,8 @@ public class ReciboService {
         } catch (MessagingException e) {
             facturacionElectronica.setRetries(facturacionElectronica.getRetries() + 1);
             facturacionElectronicaService.update(facturacionElectronica);
-            return "ERROR: No pudo ENVIARSE";
+            String errorString = MessageFormat.format("ERROR: {0} No pudo ENVIARSE", chequeraString);
+            return errorString;
         }
 
         javaMailSender.send(message);
@@ -821,7 +829,8 @@ public class ReciboService {
         } catch (JsonProcessingException e) {
             json = "";
         }
-        return "Envío de Correo Ok!!";
+        String okString = MessageFormat.format("{0} Envío de Correo Ok!!!", chequeraString);
+        return okString;
     }
 
     public String sendNext() {
@@ -838,8 +847,11 @@ public class ReciboService {
             try {
                 log.info("SendError: {}", JsonMapper.builder().findAndAddModules().build().writerWithDefaultPrettyPrinter().writeValueAsString(facturacionElectronica));
             } catch (JsonProcessingException j) {
+                log.info("SendError: JSON Exception");
             }
-            return "ERROR: Problemas de Envío";
+            ChequeraPago chequeraPago = facturacionElectronica.getChequeraPago();
+            String chequeraStringError = MessageFormat.format("ERROR: Chequera {0}/{1}/{2}/{3}/{4}/{5} Problemas de Envío", chequeraPago.getFacultadId(), chequeraPago.getTipoChequeraId(), chequeraPago.getChequeraSerieId(), chequeraPago.getAlternativaId(), chequeraPago.getProductoId(), chequeraPago.getCuotaId());
+            return chequeraStringError;
         }
     }
 }
