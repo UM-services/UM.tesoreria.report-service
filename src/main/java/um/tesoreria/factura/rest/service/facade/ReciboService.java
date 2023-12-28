@@ -1,5 +1,6 @@
 package um.tesoreria.factura.rest.service.facade;
 
+import com.github.openjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import um.tesoreria.factura.rest.exception.ChequeraFacturacionElectronicaException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,7 +16,6 @@ import com.lowagie.text.pdf.*;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
