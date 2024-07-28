@@ -1,6 +1,6 @@
 app:
   logging: debug
-  port: 8301
+  port: 8080
   mail:
     username: uid
     password: pwd
