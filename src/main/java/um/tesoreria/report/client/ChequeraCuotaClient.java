@@ -3,7 +3,7 @@ package um.tesoreria.report.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import um.tesoreria.report.kotlin.model.client.tesoreria.core.ChequeraCuotaDto;
+import um.tesoreria.report.kotlin.dto.tesoreria.core.ChequeraCuotaDto;
 
 import java.time.OffsetDateTime;
 import java.util.List;

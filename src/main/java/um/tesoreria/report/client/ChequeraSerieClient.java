@@ -2,7 +2,7 @@ package um.tesoreria.report.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-import um.tesoreria.report.kotlin.model.client.tesoreria.core.ChequeraSerieDto;
+import um.tesoreria.report.kotlin.dto.tesoreria.core.ChequeraSerieDto;
 
 import java.math.BigDecimal;
 import java.util.List;
