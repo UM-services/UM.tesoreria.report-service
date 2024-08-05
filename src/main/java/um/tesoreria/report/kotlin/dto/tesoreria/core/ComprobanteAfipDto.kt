@@ -1,4 +1,4 @@
-package um.tesoreria.report.kotlin.model.client.tesoreria.core
+package um.tesoreria.report.kotlin.dto.tesoreria.core
 
 data class ComprobanteAfipDto(
 

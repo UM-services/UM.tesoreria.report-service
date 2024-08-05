@@ -2,7 +2,7 @@ package um.tesoreria.report.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-import um.tesoreria.report.kotlin.model.client.tesoreria.core.ChequeraFacturacionElectronicaDto;
+import um.tesoreria.report.kotlin.dto.tesoreria.core.ChequeraFacturacionElectronicaDto;
 
 @FeignClient(name = "tesoreria-core-service/api/tesoreria/core/chequeraFacturacionElectronica")
 public interface ChequeraFacturacionElectronicaClient {
