@@ -18,11 +18,12 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 ## Tecnologías
 
 - Java 21
-- Spring Boot 3.4.2
+- Spring Boot 3.4.3
 - Kotlin 2.1.10
 - OpenPDF 2.0.3
 - ZXing (para códigos QR)
 - Spring Cloud 2024.0.0
+- Caffeine (para caché)
 
 ## Documentación
 
@@ -54,7 +55,7 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-El servicio estará disponible en `http://localhost:8080`
+El servicio estará disponible en `http://localhost:8080/swagger-ui.html` donde podrás consultar la documentación de la API
 
 ## Contribución
 
