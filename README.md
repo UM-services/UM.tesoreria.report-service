@@ -14,16 +14,19 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 - Envío automático de documentos por correo electrónico
 - Sistema de caché para optimizar el rendimiento
 - Integración con otros servicios de tesorería
+- Soporte para múltiples formatos de reportes
+- Validación de documentos mediante códigos QR
 
 ## Tecnologías
 
 - Java 21
-- Spring Boot 3.4.3
-- Kotlin 2.1.10
+- Spring Boot 3.4.4
+- Kotlin 2.1.20
 - OpenPDF 2.0.3
 - ZXing (para códigos QR)
-- Spring Cloud 2024.0.0
+- Spring Cloud 2024.0.1
 - Caffeine (para caché)
+- SpringDoc OpenAPI 2.8.6
 
 ## Documentación
 
@@ -40,6 +43,7 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 - JDK 21
 - Maven 3.8.8 o superior
 - Git
+- Docker (opcional, para desarrollo con contenedores)
 
 ### Configuración Local
 
@@ -56,6 +60,16 @@ mvn spring-boot:run
 ```
 
 El servicio estará disponible en `http://localhost:8080/swagger-ui.html` donde podrás consultar la documentación de la API
+
+### Desarrollo con Docker
+
+```bash
+# Construir la imagen
+docker build -t um-tesoreria-report-service -f Dockerfile.local .
+
+# Ejecutar el contenedor
+docker run -p 8080:8080 um-tesoreria-report-service
+```
 
 ## Contribución
 
