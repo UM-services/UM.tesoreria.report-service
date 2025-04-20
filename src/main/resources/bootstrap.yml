@@ -37,10 +37,14 @@ spring:
           writetimeout: 5000
 
 logging:
-  um.tesoreria.report: ${app.logging}
   level:
+    um.tesoreria.report: ${app.logging}
     web: ${app.logging}
     org:
-      hibernate:
-        SQL: ${app.logging}
+      springframework:
+        web: ${app.logging}
+        cloud: ${app.logging}
+        security: ${app.logging}
+    feign: ${app.logging}
+    feign.hystrix: ${app.logging}
 

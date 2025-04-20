@@ -10,7 +10,6 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 ### Added
 - Configuración inicial del proyecto
 - Integración con Spring Boot 3.4.4
-- Soporte para Kotlin
 - Generación de documentos PDF con OpenPDF
 - Generación de códigos QR con ZXing
 - Sistema de caché con Caffeine
@@ -18,15 +17,20 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Documentación con SpringDoc OpenAPI
 - Configuración de correo electrónico
 - Soporte para múltiples formatos de reportes
+- Generación de reportes Excel con Apache POI
+- Migración de DTOs a Java con Lombok
 
 ### Changed
-- N/A
+- Migración de DTOs de Kotlin a Java
+- Actualización de la configuración de logging
+- Mejora en el manejo de fechas con @JsonFormat
 
 ### Deprecated
 - N/A
 
 ### Removed
-- N/A
+- Eliminación de archivos DTOs en Kotlin
+- Eliminación de dependencia de Kotlin
 
 ### Fixed
 - N/A

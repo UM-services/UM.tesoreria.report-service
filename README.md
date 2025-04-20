@@ -1,5 +1,13 @@
 # UM.tesoreria.report-service
 
+[![Java](https://img.shields.io/badge/Java-21-blue)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.4-brightgreen)](https://spring.io/projects/spring-boot)
+[![OpenPDF](https://img.shields.io/badge/OpenPDF-2.0.3-orange)](https://github.com/LibrePDF/OpenPDF)
+[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2024.0.1-brightgreen)](https://spring.io/projects/spring-cloud)
+[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.6-blue)](https://springdoc.org/)
+[![Apache POI](https://img.shields.io/badge/Apache%20POI-5.2.3-red)](https://poi.apache.org/)
+[![Lombok](https://img.shields.io/badge/Lombok-1.18.30-pink)](https://projectlombok.org/)
+
 ## Estado del Proyecto
 
 [![UM.tesoreria.report-service CI](https://github.com/UM-services/UM.tesoreria.report-service/actions/workflows/maven.yml/badge.svg)](https://github.com/UM-services/UM.tesoreria.report-service/actions/workflows/maven.yml)
@@ -16,17 +24,19 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 - Integración con otros servicios de tesorería
 - Soporte para múltiples formatos de reportes
 - Validación de documentos mediante códigos QR
+- Generación de reportes Excel con Apache POI
 
 ## Tecnologías
 
 - Java 21
 - Spring Boot 3.4.4
-- Kotlin 2.1.20
 - OpenPDF 2.0.3
 - ZXing (para códigos QR)
 - Spring Cloud 2024.0.1
 - Caffeine (para caché)
 - SpringDoc OpenAPI 2.8.6
+- Apache POI (para reportes Excel)
+- Lombok (para reducir código boilerplate)
 
 ## Documentación
 
