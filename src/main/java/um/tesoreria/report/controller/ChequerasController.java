@@ -25,10 +25,10 @@ public class ChequerasController {
         this.service = service;
     }
 
-    @GetMapping("/planilla/detalle/{facultadId}/{geograficaId}/{lectivoId}")
-    public ResponseEntity<Resource> generatePlanillaDetalle(@PathVariable Integer facultadId, @PathVariable Integer geograficaId, @PathVariable Integer lectivoId) throws FileNotFoundException {
+    @GetMapping("/planilla/detalle/{facultadId}/{lectivoId}")
+    public ResponseEntity<Resource> generatePlanillaDetalle(@PathVariable Integer facultadId, @PathVariable Integer lectivoId) throws FileNotFoundException {
         log.debug("Processing ChequerasController.generatePlanillaDetalle");
-        return generateFile(service.generatePlanillaDetalle(facultadId, geograficaId, lectivoId), "planilla.xlsx");
+        return generateFile(service.generatePlanillaDetalle(facultadId, lectivoId), "planilla.xlsx");
     }
 
 }

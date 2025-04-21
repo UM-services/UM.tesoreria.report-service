@@ -45,11 +45,11 @@ public class ChequerasService {
         this.legajoClient = legajoClient;
     }
 
-    public String generatePlanillaDetalle(Integer facultadId, Integer geograficaId, Integer lectivoId) {
+    public String generatePlanillaDetalle(Integer facultadId, Integer lectivoId) {
         log.debug("Processing ChequerasService.generatePlanillaDetalle");
         String path = environment.getProperty("path.reports");
 
-        String filename = path + MessageFormat.format("cuotas.{0}.{1}.{2}.xlsx", facultadId, geograficaId, lectivoId);
+        String filename = path + MessageFormat.format("cuotas.{0}.{1}.xlsx", facultadId, lectivoId);
 
         Workbook book = new XSSFWorkbook();
         CellStyle styleNormal = book.createCellStyle();
@@ -97,14 +97,18 @@ public class ChequerasService {
             this.setCellString(row, periodoColumn++, MessageFormat.format("{0}/{1,number,#} Pagado", periodo.getMes(), periodo.getAnho()), styleBold);
         }
 
-        for (ChequeraSerieDto chequeraSerie : chequeraSerieClient.findAllByLectivo(facultadId, geograficaId, lectivoId)) {
+        for (ChequeraSerieDto chequeraSerie : chequeraSerieClient.findAllByLectivo(facultadId, lectivoId)) {
             // determina carrera
             var carrera = "";
             var key = chequeraSerie.getPersonaId() + "." + chequeraSerie.getDocumentoId();
             if (legajos.containsKey(key)) {
                 var legajo = legajos.get(key);
                 if (legajo.getCarrera() != null) {
-                    carrera = MessageFormat.format("{0}/{1}", legajo.getCarrera().getPlan().getNombre(), legajo.getCarrera().getNombre());
+                    var plan = "";
+                    if (legajo.getCarrera().getPlan() != null) {
+                        plan = legajo.getCarrera().getPlan().getNombre();
+                    }
+                    carrera = MessageFormat.format("{0}/{1}", plan, legajo.getCarrera().getNombre());
                 }
             }
 
