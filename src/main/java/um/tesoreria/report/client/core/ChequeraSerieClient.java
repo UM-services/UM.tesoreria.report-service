@@ -10,7 +10,7 @@ import java.util.List;
 @FeignClient(name = "tesoreria-core-service/api/tesoreria/core/chequeraSerie")
 public interface ChequeraSerieClient {
 
-    @GetMapping("/lectivo/{facultadId}/{geograficaId}/{lectivoId}")
-    List<ChequeraSerieDto> findAllByLectivo(@PathVariable Integer facultadId, @PathVariable Integer geograficaId, @PathVariable Integer lectivoId);
+    @GetMapping("/lectivo/{facultadId}/{lectivoId}")
+    List<ChequeraSerieDto> findAllByLectivo(@PathVariable Integer facultadId, @PathVariable Integer lectivoId);
 
 }
