@@ -5,40 +5,44 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.0.1-SNAPSHOT] - 2025-04-21
 
 ### Added
-- Configuración inicial del proyecto
-- Integración con Spring Boot 3.4.4
-- Generación de documentos PDF con OpenPDF
-- Generación de códigos QR con ZXing
+- Integración con Spring Boot 3.5.0
 - Sistema de caché con Caffeine
 - Integración con Eureka para registro de servicios
-- Documentación con SpringDoc OpenAPI
+- Documentación con SpringDoc OpenAPI 2.8.8
 - Configuración de correo electrónico
 - Soporte para múltiples formatos de reportes
-- Generación de reportes Excel con Apache POI
+- Generación de reportes Excel con Apache POI 5.4.1
 - Migración de DTOs a Java con Lombok
 
 ### Changed
+- Refactorización de endpoints y manejo de planes en reportes de chequeras
+  - Eliminación del parámetro geograficaId del endpoint /planilla/detalle
+  - Actualización de ChequeraSerieClient para coincidir con cambios en endpoints
+  - Mejora en el manejo de planes nulos en generación de reportes
+  - Mejora en el formato de carrera para manejar planes nulos
 - Migración de DTOs de Kotlin a Java
-- Actualización de la configuración de logging
-- Mejora en el manejo de fechas con @JsonFormat
-
-### Deprecated
-- N/A
+  - Migración completa de DTOs de Kotlin a Java
+  - Adición de anotaciones Lombok para reducir código boilerplate
+  - Adición de @JsonFormat para manejo adecuado de fechas
+  - Actualización de la configuración de logging
+  - Eliminación de dependencia de Kotlin
 
 ### Removed
 - Eliminación de archivos DTOs en Kotlin
 - Eliminación de dependencia de Kotlin
+- Eliminación del parámetro geograficaId del endpoint /planilla/detalle
 
 ### Fixed
-- N/A
+- Manejo de planes nulos en generación de reportes
+- Formato de carrera para planes nulos
 
 ### Security
 - N/A
 
-## [0.0.1-SNAPSHOT] - 2024-03-XX
+## [0.0.1-SNAPSHOT] - 2025-03-29
 
 ### Added
 - Estructura inicial del proyecto

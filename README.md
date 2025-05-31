@@ -1,11 +1,10 @@
 # UM.tesoreria.report-service
 
 [![Java](https://img.shields.io/badge/Java-21-blue)](https://www.java.com/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.4-brightgreen)](https://spring.io/projects/spring-boot)
-[![OpenPDF](https://img.shields.io/badge/OpenPDF-2.0.3-orange)](https://github.com/LibrePDF/OpenPDF)
-[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2024.0.1-brightgreen)](https://spring.io/projects/spring-cloud)
-[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.6-blue)](https://springdoc.org/)
-[![Apache POI](https://img.shields.io/badge/Apache%20POI-5.2.3-red)](https://poi.apache.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen)](https://spring.io/projects/spring-boot)
+[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.0.0-brightgreen)](https://spring.io/projects/spring-cloud)
+[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.8-blue)](https://springdoc.org/)
+[![Apache POI](https://img.shields.io/badge/Apache%20POI-5.4.1-red)](https://poi.apache.org/)
 [![Lombok](https://img.shields.io/badge/Lombok-1.18.30-pink)](https://projectlombok.org/)
 
 ## Estado del Proyecto
@@ -16,26 +15,22 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 
 ## Características Principales
 
-- Generación de documentos PDF utilizando OpenPDF
+- Generación de documentos PDF
 - Generación de facturas electrónicas
-- Códigos QR para verificación de documentos
 - Envío automático de documentos por correo electrónico
 - Sistema de caché para optimizar el rendimiento
 - Integración con otros servicios de tesorería
 - Soporte para múltiples formatos de reportes
-- Validación de documentos mediante códigos QR
 - Generación de reportes Excel con Apache POI
 
 ## Tecnologías
 
 - Java 21
-- Spring Boot 3.4.4
-- OpenPDF 2.0.3
-- ZXing (para códigos QR)
-- Spring Cloud 2024.0.1
+- Spring Boot 3.5.0
+- Spring Cloud 2025.0.0
 - Caffeine (para caché)
-- SpringDoc OpenAPI 2.8.6
-- Apache POI (para reportes Excel)
+- SpringDoc OpenAPI 2.8.8
+- Apache POI 5.4.1 (para reportes Excel)
 - Lombok (para reducir código boilerplate)
 
 ## Documentación
