@@ -3,7 +3,7 @@
 [![Java](https://img.shields.io/badge/Java-21-blue)](https://www.java.com/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen)](https://spring.io/projects/spring-boot)
 [![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.0.0-brightgreen)](https://spring.io/projects/spring-cloud)
-[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.8-blue)](https://springdoc.org/)
+[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.9-blue)](https://springdoc.org/)
 [![Apache POI](https://img.shields.io/badge/Apache%20POI-5.4.1-red)](https://poi.apache.org/)
 [![Lombok](https://img.shields.io/badge/Lombok-1.18.30-pink)](https://projectlombok.org/)
 
@@ -29,7 +29,7 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 - Spring Boot 3.5.0
 - Spring Cloud 2025.0.0
 - Caffeine (para caché)
-- SpringDoc OpenAPI 2.8.8
+- SpringDoc OpenAPI 2.8.9
 - Apache POI 5.4.1 (para reportes Excel)
 - Lombok (para reducir código boilerplate)
 

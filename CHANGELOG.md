@@ -5,13 +5,23 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.1-SNAPSHOT] - 2025-05-31
+
+### Changed
+- Actualización de documentación y versiones de dependencias
+  - Actualización de README.md con versiones actuales de dependencias
+  - Eliminación de referencias a tecnologías no utilizadas (OpenPDF, ZXing)
+  - Actualización de CHANGELOG.md para reflejar cambios recientes
+  - Actualización de pom.xml con versiones verificadas de dependencias
+  - Actualización de TipoChequeraDto.java
+
 ## [0.0.1-SNAPSHOT] - 2025-04-21
 
 ### Added
 - Integración con Spring Boot 3.5.0
 - Sistema de caché con Caffeine
 - Integración con Eureka para registro de servicios
-- Documentación con SpringDoc OpenAPI 2.8.8
+- Documentación con SpringDoc OpenAPI 2.8.9
 - Configuración de correo electrónico
 - Soporte para múltiples formatos de reportes
 - Generación de reportes Excel con Apache POI 5.4.1
