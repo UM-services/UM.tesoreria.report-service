@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import um.tesoreria.report.domain.dto.ChequeraCuotaDto;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -14,6 +15,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChequeraPagoDto {
+
     private Long chequeraPagoId;
     private Long chequeraCuotaId;
     private Integer facultadId;
@@ -42,5 +44,7 @@ public class ChequeraPagoDto {
     private Integer tipoPagoId;
     private String idMercadoPago;
     private TipoPagoDto tipoPago;
+    private ProductoDto producto;
+    private ChequeraCuotaDto chequeraCuota;
 
 }

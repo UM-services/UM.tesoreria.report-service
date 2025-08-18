@@ -1,19 +1,13 @@
 package um.tesoreria.report.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import um.tesoreria.report.client.core.ChequeraCuotaClient;
-import um.tesoreria.report.client.core.ChequeraSerieClient;
-import um.tesoreria.report.client.core.LectivoClient;
-import um.tesoreria.report.client.core.LegajoClient;
+import um.tesoreria.report.client.core.*;
 import um.tesoreria.report.client.core.facade.ChequeraClient;
 import um.tesoreria.report.domain.dto.ChequeraSerieDto;
-import um.tesoreria.report.domain.dto.core.ChequeraPagoDto;
 import um.tesoreria.report.domain.dto.core.CuotaPeriodoDto;
 
 import java.io.File;
@@ -22,7 +16,6 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.OffsetDateTime;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,14 +28,25 @@ public class ChequerasService {
     private final ChequeraCuotaClient chequeraCuotaClient;
     private final ChequeraClient chequeraClient;
     private final LegajoClient legajoClient;
+    private final FacultadClient facultadClient;
+    private final TipoChequeraClient tipoChequeraClient;
+    private final ChequeraPagoClient chequeraPagoClient;
 
-    public ChequerasService(Environment environment, ChequeraSerieClient chequeraSerieClient, LectivoClient lectivoClient, ChequeraCuotaClient chequeraCuotaClient, ChequeraClient chequeraClient, LegajoClient legajoClient) {
+    public ChequerasService(Environment environment,
+                            ChequeraSerieClient chequeraSerieClient,
+                            LectivoClient lectivoClient,
+                            ChequeraCuotaClient chequeraCuotaClient,
+                            ChequeraClient chequeraClient,
+                            LegajoClient legajoClient, FacultadClient facultadClient, TipoChequeraClient tipoChequeraClient, ChequeraPagoClient chequeraPagoClient) {
         this.environment = environment;
         this.chequeraSerieClient = chequeraSerieClient;
         this.lectivoClient = lectivoClient;
         this.chequeraCuotaClient = chequeraCuotaClient;
         this.chequeraClient = chequeraClient;
         this.legajoClient = legajoClient;
+        this.facultadClient = facultadClient;
+        this.tipoChequeraClient = tipoChequeraClient;
+        this.chequeraPagoClient = chequeraPagoClient;
     }
 
     public String generatePlanillaDetalle(Integer facultadId, Integer lectivoId) {
@@ -173,18 +177,68 @@ public class ChequerasService {
         return filename;
     }
 
-    private void logPagos(List<ChequeraPagoDto> chequeraPagos) {
-        log.debug("Processing ChequerasService.logPagos");
-        try {
-            log.debug("Pagos -> {}", JsonMapper
-                    .builder()
-                    .findAndAddModules()
-                    .build()
-                    .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(chequeraPagos));
-        } catch (JsonProcessingException e) {
-            log.debug("Pagos jsonify error -> {}", e.getMessage());
+    public String generatePlanillaPagos(Integer facultadId, Integer tipoChequeraId, Integer lectivoId) {
+        log.debug("Processing ChequerasService.generatePlanillaPagos");
+        String path = environment.getProperty("path.reports");
+
+        String filename = path + MessageFormat.format("pagos.{0}.{1}.{2}.xlsx", facultadId, tipoChequeraId, lectivoId);
+
+        Workbook book = new XSSFWorkbook();
+        CellStyle styleNormal = book.createCellStyle();
+        Font fontNormal = book.createFont();
+        fontNormal.setBold(false);
+        styleNormal.setFont(fontNormal);
+
+        CellStyle styleBold = book.createCellStyle();
+        Font fontBold = book.createFont();
+        fontBold.setBold(true);
+        styleBold.setFont(fontBold);
+
+        Sheet sheet = book.createSheet("pagos");
+        Row row;
+        int fila = 0;
+        row = sheet.createRow(fila);
+        this.setCellString(row, 0, "Facultad", styleBold);
+        this.setCellString(row, 1, "Lectivo", styleBold);
+        this.setCellString(row, 2, "Tipo de Chequera", styleBold);
+        this.setCellString(row, 3, "Sede", styleBold);
+        this.setCellString(row, 4, "Documento", styleBold);
+        this.setCellString(row, 5, "Apellido, Nombre", styleBold);
+        this.setCellString(row, 6, "Chequera", styleBold);
+        this.setCellString(row, 7, "Periodo", styleBold);
+        this.setCellString(row, 8, "Fecha Pago", styleBold);
+        this.setCellString(row, 9, "Importe Pagado", styleBold);
+        this.setCellString(row, 10, "Tipo Pago", styleBold);
+
+        for (var chequeraPago : chequeraPagoClient.findAllByFacultadIdAndTipoChequeraIdAndLectivoId(facultadId, tipoChequeraId, lectivoId)) {
+            row = sheet.createRow(++fila);
+            this.setCellString(row, 0, chequeraPago.getChequeraCuota().getFacultad().getNombre(), styleNormal);
+            this.setCellString(row, 1, chequeraPago.getChequeraCuota().getChequeraSerie().getLectivo().getNombre(), styleNormal);
+            this.setCellString(row, 2, chequeraPago.getChequeraCuota().getTipoChequera().getNombre(), styleNormal);
+            this.setCellString(row, 3, chequeraPago.getChequeraCuota().getChequeraSerie().getGeografica().getNombre(), styleNormal);
+            this.setCellBigDecimal(row, 4, chequeraPago.getChequeraCuota().getChequeraSerie().getPersonaId(), styleNormal);
+            this.setCellString(row, 5, MessageFormat.format("{0}, {1}", chequeraPago.getChequeraCuota().getChequeraSerie().getPersona().getApellido(), chequeraPago.getChequeraCuota().getChequeraSerie().getPersona().getNombre()), styleNormal);
+            this.setCellString(row, 6, MessageFormat.format("{0,number,#}/{1,number,#}/{2,number,#}", chequeraPago.getFacultadId(), chequeraPago.getTipoChequeraId(), chequeraPago.getChequeraSerieId()), styleNormal);
+            this.setCellString(row, 7, MessageFormat.format("{0}/{1,number,#}", chequeraPago.getMes(), chequeraPago.getAnho()), styleNormal);
+            this.setCellOffsetDateTime(row, 8, chequeraPago.getFecha(), styleNormal);
+            this.setCellBigDecimal(row, 9, chequeraPago.getImporte(), styleNormal);
+            this.setCellString(row, 10, chequeraPago.getTipoPago().getNombre(), styleNormal);
         }
+
+        for (int column = 0; column < sheet.getRow(0).getPhysicalNumberOfCells(); column++)
+            sheet.autoSizeColumn(column);
+
+        try {
+            File file = new File(filename);
+            FileOutputStream output = new FileOutputStream(file);
+            book.write(output);
+            output.flush();
+            output.close();
+            book.close();
+        } catch (Exception e) {
+            log.debug("Error escribiendo pagos");
+        }
+        return filename;
     }
 
     private void setCellOffsetDateTime(Row row, int column, OffsetDateTime value, CellStyle style) {
