@@ -5,6 +5,16 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2025-08-18
+### Added
+- **feat:** Se añade la funcionalidad para generar una planilla de pagos, incluyendo un nuevo endpoint y los clientes Feign necesarios (`ChequeraPagoClient`, `FacultadClient`, `TipoChequeraClient`).
+### Changed
+- **refactor:** Se estandariza la configuración de todos los clientes Feign para mejorar la legibilidad y prevenir conflictos.
+- **chore:** Se actualiza la dependencia de Spring Boot a la versión `3.5.4`.
+### Fixed
+- **fix:** Se corrigen los permisos de usuario en el `Dockerfile` para el directorio de la aplicación.
+
+---
 ## [0.0.1-SNAPSHOT] - 2025-05-31
 
 ### Changed

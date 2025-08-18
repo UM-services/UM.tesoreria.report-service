@@ -31,4 +31,12 @@ public class ChequerasController {
         return generateFile(service.generatePlanillaDetalle(facultadId, lectivoId), "planilla.xlsx");
     }
 
+    @GetMapping("/planilla/pagos/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/lectivo/{lectivoId}")
+    public ResponseEntity<Resource> generatePlanillaPagos(@PathVariable Integer facultadId,
+                                                          @PathVariable Integer tipoChequeraId,
+                                                          @PathVariable Integer lectivoId) throws FileNotFoundException {
+        log.debug("Processing ChequerasController.generatePlanillaPagos");
+        return generateFile(service.generatePlanillaPagos(facultadId, tipoChequeraId, lectivoId), "pagos.xlsx");
+    }
+
 }

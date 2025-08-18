@@ -7,7 +7,7 @@ import um.tesoreria.report.domain.dto.core.LegajoDto;
 
 import java.util.List;
 
-@FeignClient(name = "tesoreria-core-service/api/tesoreria/core/legajo")
+@FeignClient(name = "tesoreria-core-service", contextId = "legajoClient", path = "/api/tesoreria/core/legajo")
 public interface LegajoClient {
 
     @GetMapping("/facultad/{facultadId}")

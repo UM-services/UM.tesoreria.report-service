@@ -7,7 +7,7 @@ import um.tesoreria.report.domain.dto.ChequeraSerieDto;
 
 import java.util.List;
 
-@FeignClient(name = "tesoreria-core-service/api/tesoreria/core/chequeraSerie")
+@FeignClient(name = "tesoreria-core-service", contextId = "chequeraSerieClient", path = "/api/tesoreria/core/chequeraSerie")
 public interface ChequeraSerieClient {
 
     @GetMapping("/lectivo/{facultadId}/{lectivoId}")
