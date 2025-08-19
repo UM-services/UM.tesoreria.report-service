@@ -129,14 +129,14 @@ public class ChequerasService {
             // Crear un Map para búsqueda eficiente de cuotas
             var cuotasMap = cuotas.stream()
                     .collect(Collectors.toMap(
-                            cuota -> cuota.getMes() + "." + cuota.getAnho(), // clave compuesta de mes-año
+                            cuota -> cuota.getProductoId() + "." + cuota.getMes() + "." + cuota.getAnho(), // clave compuesta de mes-año
                             cuota -> cuota,
                             (cuota, replacement) -> cuota // en caso de duplicados, tomar la primera
                     ));
 
             periodoColumn = 8;
             for (CuotaPeriodoDto periodo : periodos) {
-                var cuota = cuotasMap.get(periodo.getMes() + "." + periodo.getAnho());
+                var cuota = cuotasMap.get(periodo.getProductoId() + "." + periodo.getMes() + "." + periodo.getAnho());
 
                 if (cuota == null) {
                     periodoColumn += 6;
