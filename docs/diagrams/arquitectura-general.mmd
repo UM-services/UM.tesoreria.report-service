@@ -1,0 +1,12 @@
+```mermaid
+graph TD
+    subgraph "Sistema de Tesorería"
+        A["Usuario Final (API)"] --> B("Report Service");
+        B --> C["ChequerasController"];
+        C --> D["ChequerasService"];
+        D --> E["Facade: ChequeraClient"];
+        E --> F["Core Service: Chequeras"];
+        E --> G["Core Service: Legajos"];
+        E --> H["Core Service: Lectivo"];
+    end
+```

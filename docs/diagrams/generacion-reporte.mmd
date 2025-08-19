@@ -1,0 +1,17 @@
+```mermaid
+sequenceDiagram
+    participant User
+    participant ChequerasController
+    participant ChequerasService
+    participant ChequeraClient
+
+    User->>+ChequerasController: GET /chequeras/reporte
+    ChequerasController->>+ChequerasService: generarReporte()
+    ChequerasService->>+ChequeraClient: getDatosChequera()
+    ChequeraClient-->>-ChequerasService: Datos Chequera
+    ChequerasService->>+ChequeraClient: getPagos()
+    ChequeraClient-->>-ChequerasService: Lista de Pagos
+    ChequerasService-->>-ChequerasController: Reporte (Excel)
+    ChequerasController-->>-User: ResponseEntity<byte[]>
+```
+```
