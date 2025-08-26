@@ -5,7 +5,22 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<<<<<<< Updated upstream
+## [0.2.0] - 2025-08-26
+### Added
+- **feat:** Se añade la funcionalidad para generar una planilla de pagos, incluyendo un nuevo endpoint y los clientes Feign necesarios (`ChequeraPagoClient`, `FacultadClient`, `TipoChequeraClient`).
+### Changed
+- **refactor:** Se estandariza la configuración de todos los clientes Feign para mejorar la legibilidad y prevenir conflictos.
+- **chore:** Se actualiza la dependencia de Spring Boot a la versión `3.5.4`.
+### Fixed
+- **fix:** Se corrigen los permisos de usuario en el `Dockerfile` para el directorio de la aplicación.
+- **fix:** Se soluciona un problema en la generación de reportes que mostraba períodos sin datos.
+- **fix:** Se corrige la versión de SpringDoc OpenAPI y se añade una entrada faltante en el changelog.
+### Docs
+- **docs:** Se actualiza la documentación y las versiones de las dependencias en el `README.md`.
+- **docs:** Se actualiza el branding y se eliminan diagramas obsoletos en la documentación automática.
+
+---
+
 ## [0.1.0] - 2025-08-18
 ### Added
 - **feat:** Se añade la funcionalidad para generar una planilla de pagos, incluyendo un nuevo endpoint y los clientes Feign necesarios (`ChequeraPagoClient`, `FacultadClient`, `TipoChequeraClient`).
@@ -16,18 +31,8 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - **fix:** Se corrigen los permisos de usuario en el `Dockerfile` para el directorio de la aplicación.
 
 ---
-=======
-## [1.0.0] - 2025-08-19
 
-### Added
-### Changed
-- Refactorización de la lógica de generación de reportes para soportar múltiples productos y periodos.
-- Mejor manejo de planes y carreras nulas en la generación de reportes.
-
-
----
-
-## [0.0.1-SNAPSHOT] - 2025-05-31
+## [00.1-SNAPSHOT] - 2025-05-31
 
 ### Changed
 - Actualización de documentación y versiones de dependencias
@@ -83,4 +88,4 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Configuración de Docker
 - Configuración de GitHub Actions
 - Documentación inicial
-- Configuración de Jekyll para la documentación 
+- Configuración de Jekyll para la documentación

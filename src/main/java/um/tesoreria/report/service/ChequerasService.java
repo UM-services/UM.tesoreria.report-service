@@ -15,7 +15,10 @@ import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -88,7 +91,19 @@ public class ChequerasService {
         this.setCellString(row, 6, "Curso", styleBold);
         this.setCellString(row, 7, "Tipo Chequera", styleBold);
 
-        var periodos = chequeraCuotaClient.findAllPeriodosLectivo(lectivoId);
+        var allChequeras = chequeraSerieClient.findAllByLectivo(facultadId, lectivoId);
+        var periodosConDatos = new java.util.HashSet<String>();
+        for (var chequeraSerie : allChequeras) {
+            var cuotas = chequeraClient.findAllCuotaPagosByChequera(chequeraSerie.getFacultadId(), chequeraSerie.getTipoChequeraId(), chequeraSerie.getChequeraSerieId(), chequeraSerie.getAlternativaId());
+            for (var cuota : cuotas) {
+                periodosConDatos.add(cuota.getProductoId() + "." + cuota.getMes() + "." + cuota.getAnho());
+            }
+        }
+
+        var periodos = chequeraCuotaClient.findAllPeriodosLectivo(lectivoId)
+                .stream()
+                .filter(p -> periodosConDatos.contains(p.getProductoId() + "." + p.getMes() + "." + p.getAnho()))
+                .toList();
 
         // Add period headers starting from column 8
         int periodoColumn = 8;
@@ -101,7 +116,7 @@ public class ChequerasService {
             this.setCellString(row, periodoColumn++, MessageFormat.format("{0}/{1,number,#} Pagado", periodo.getMes(), periodo.getAnho()), styleBold);
         }
 
-        for (ChequeraSerieDto chequeraSerie : chequeraSerieClient.findAllByLectivo(facultadId, lectivoId)) {
+        for (ChequeraSerieDto chequeraSerie : allChequeras) {
             // determina carrera
             var carrera = "";
             var key = chequeraSerie.getPersonaId() + "." + chequeraSerie.getDocumentoId();
