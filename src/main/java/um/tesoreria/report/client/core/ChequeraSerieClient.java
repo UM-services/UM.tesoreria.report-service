@@ -13,4 +13,7 @@ public interface ChequeraSerieClient {
     @GetMapping("/lectivo/{facultadId}/{lectivoId}")
     List<ChequeraSerieDto> findAllByLectivo(@PathVariable Integer facultadId, @PathVariable Integer lectivoId);
 
+    @GetMapping("/lectivo/test/{facultadId}/{lectivoId}")
+    List<ChequeraSerieDto> findAllByLectivoTest(@PathVariable Integer facultadId, @PathVariable Integer lectivoId);
+
 }

@@ -5,6 +5,25 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-09-05
+### Added
+- **feat:** Añadido método `jsonify()` y utilitario `Jsonifier` para serialización JSON en DTOs.
+- **feat:** Nuevo endpoint de test en `ChequeraSerieClient` (`/lectivo/test/{facultadId}/{lectivoId}`).
+- **feat:** Logging detallado de entidades y pagos en generación de reportes.
+
+### Changed
+- **refactor:** Simplificación y mejora de la lógica de generación de reportes en `ChequerasService` (uso de streams, agrupamiento y logging).
+- **refactor:** Eliminación de dependencias y parámetros no utilizados en servicios y DTOs.
+- **chore:** Actualización de dependencias:
+  - Spring Boot: `3.5.4` → `3.5.5`
+  - SpringDoc OpenAPI: `2.8.9` → `2.8.10`
+
+### Fixed
+- **fix:** Corrección de estilos y formato en generación de celdas de fechas en reportes Excel.
+
+### Docs
+- **docs:** Revisión de diagramas y documentación automática para reflejar la nueva estructura y utilidades.
+
 ## [0.2.0] - 2025-08-26
 ### Added
 - **feat:** Se añade la funcionalidad para generar una planilla de pagos, incluyendo un nuevo endpoint y los clientes Feign necesarios (`ChequeraPagoClient`, `FacultadClient`, `TipoChequeraClient`).

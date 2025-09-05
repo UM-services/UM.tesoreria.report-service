@@ -1,9 +1,10 @@
+
 # UM.tesoreria.report-service
 
 [![Java](https://img.shields.io/badge/Java-21-blue)](https://www.java.com/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.4-brightgreen)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen)](https://spring.io/projects/spring-boot)
 [![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.0.0-brightgreen)](https://spring.io/projects/spring-cloud)
-[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.9-blue)](https://springdoc.org/)
+[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.10-blue)](https://springdoc.org/)
 [![Apache POI](https://img.shields.io/badge/Apache%20POI-5.4.1-red)](https://poi.apache.org/)
 [![Lombok](https://img.shields.io/badge/Lombok-1.18.30-pink)](https://projectlombok.org/)
 
@@ -13,6 +14,7 @@
 
 Servicio de generación de reportes y documentos para UM Tesorería. Este microservicio se encarga de la generación de reportes Excel, integración con servicios core de Tesorería y la gestión de documentos relacionados.
 
+
 ## Características Principales
 
 - Generación de reportes Excel de chequeras y planillas
@@ -21,14 +23,16 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 - Configuración avanzada con Spring Cloud y Consul
 - Documentación automática con SpringDoc OpenAPI
 - Diagramas de arquitectura y flujo de reportes
+- **NUEVO:** Utilidades de serialización JSON para debugging y pruebas
+
 
 ## Tecnologías
 
 - Java 21
-- Spring Boot 3.5.4
+- Spring Boot 3.5.5
 - Spring Cloud 2025.0.0
 - Caffeine (para caché)
-- SpringDoc OpenAPI 2.8.9
+- SpringDoc OpenAPI 2.8.10
 - Apache POI 5.4.1 (para reportes Excel)
 - Lombok (para reducir código boilerplate)
 

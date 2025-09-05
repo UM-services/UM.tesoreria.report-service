@@ -9,16 +9,14 @@ import um.tesoreria.report.client.core.*;
 import um.tesoreria.report.client.core.facade.ChequeraClient;
 import um.tesoreria.report.domain.dto.ChequeraSerieDto;
 import um.tesoreria.report.domain.dto.core.CuotaPeriodoDto;
+import um.tesoreria.report.util.Jsonifier;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,8 +29,6 @@ public class ChequerasService {
     private final ChequeraCuotaClient chequeraCuotaClient;
     private final ChequeraClient chequeraClient;
     private final LegajoClient legajoClient;
-    private final FacultadClient facultadClient;
-    private final TipoChequeraClient tipoChequeraClient;
     private final ChequeraPagoClient chequeraPagoClient;
 
     public ChequerasService(Environment environment,
@@ -40,15 +36,14 @@ public class ChequerasService {
                             LectivoClient lectivoClient,
                             ChequeraCuotaClient chequeraCuotaClient,
                             ChequeraClient chequeraClient,
-                            LegajoClient legajoClient, FacultadClient facultadClient, TipoChequeraClient tipoChequeraClient, ChequeraPagoClient chequeraPagoClient) {
+                            LegajoClient legajoClient,
+                            ChequeraPagoClient chequeraPagoClient) {
         this.environment = environment;
         this.chequeraSerieClient = chequeraSerieClient;
         this.lectivoClient = lectivoClient;
         this.chequeraCuotaClient = chequeraCuotaClient;
         this.chequeraClient = chequeraClient;
         this.legajoClient = legajoClient;
-        this.facultadClient = facultadClient;
-        this.tipoChequeraClient = tipoChequeraClient;
         this.chequeraPagoClient = chequeraPagoClient;
     }
 
@@ -73,9 +68,9 @@ public class ChequerasService {
         var legajos = legajoClient.findAllByFacultadId(facultadId)
                 .stream()
                 .collect(Collectors.toMap(
-                    legajo -> legajo.getPersonaId() + "." + legajo.getDocumentoId(),
-                    legajo -> legajo,
-                    (legajo, replacement) -> legajo
+                        legajo -> legajo.getPersonaId() + "." + legajo.getDocumentoId(),
+                        legajo -> legajo,
+                        (legajo, replacement) -> legajo
                 ));
 
         Sheet sheet = book.createSheet(lectivo.getNombre());
@@ -91,19 +86,11 @@ public class ChequerasService {
         this.setCellString(row, 6, "Curso", styleBold);
         this.setCellString(row, 7, "Tipo Chequera", styleBold);
 
+        // Cambiar en producción
+        // var allChequeras = chequeraSerieClient.findAllByLectivoTest(facultadId, lectivoId);
         var allChequeras = chequeraSerieClient.findAllByLectivo(facultadId, lectivoId);
-        var periodosConDatos = new java.util.HashSet<String>();
-        for (var chequeraSerie : allChequeras) {
-            var cuotas = chequeraClient.findAllCuotaPagosByChequera(chequeraSerie.getFacultadId(), chequeraSerie.getTipoChequeraId(), chequeraSerie.getChequeraSerieId(), chequeraSerie.getAlternativaId());
-            for (var cuota : cuotas) {
-                periodosConDatos.add(cuota.getProductoId() + "." + cuota.getMes() + "." + cuota.getAnho());
-            }
-        }
 
-        var periodos = chequeraCuotaClient.findAllPeriodosLectivo(lectivoId)
-                .stream()
-                .filter(p -> periodosConDatos.contains(p.getProductoId() + "." + p.getMes() + "." + p.getAnho()))
-                .toList();
+        var periodos = chequeraCuotaClient.findAllPeriodosLectivo(lectivoId);
 
         // Add period headers starting from column 8
         int periodoColumn = 8;
@@ -117,6 +104,7 @@ public class ChequerasService {
         }
 
         for (ChequeraSerieDto chequeraSerie : allChequeras) {
+            log.debug("ChequeraSerie: {}", chequeraSerie.jsonify());
             // determina carrera
             var carrera = "";
             var key = chequeraSerie.getPersonaId() + "." + chequeraSerie.getDocumentoId();
@@ -131,6 +119,13 @@ public class ChequerasService {
                 }
             }
 
+            var cuotas = chequeraClient.findAllCuotaPagosByChequera(chequeraSerie.getFacultadId(), chequeraSerie.getTipoChequeraId(), chequeraSerie.getChequeraSerieId(), chequeraSerie.getAlternativaId());
+            log.debug("Cuotas: {}", Jsonifier.builder(cuotas).build());
+            var cuotasMap = cuotas.stream()
+                    .collect(Collectors.groupingBy(
+                            cuota -> cuota.getMes() + "." + cuota.getAnho()
+                    ));
+
             row = sheet.createRow(++fila);
             this.setCellString(row, 0, MessageFormat.format("{0}/{1}/{2,number,#}", chequeraSerie.getFacultadId(), chequeraSerie.getTipoChequeraId(), chequeraSerie.getChequeraSerieId()), styleNormal);
             this.setCellBigDecimal(row, 1, chequeraSerie.getPersona().getPersonaId(), styleNormal);
@@ -140,40 +135,54 @@ public class ChequerasService {
             this.setCellString(row, 5, carrera, styleNormal);
             this.setCellInteger(row, 6, chequeraSerie.getCursoId(), styleNormal);
             this.setCellString(row, 7, chequeraSerie.getTipoChequera().getNombre(), styleNormal);
-            var cuotas = chequeraClient.findAllCuotaPagosByChequera(chequeraSerie.getFacultadId(), chequeraSerie.getTipoChequeraId(), chequeraSerie.getChequeraSerieId(), chequeraSerie.getAlternativaId());
-            // Crear un Map para búsqueda eficiente de cuotas
-            var cuotasMap = cuotas.stream()
-                    .collect(Collectors.toMap(
-                            cuota -> cuota.getProductoId() + "." + cuota.getMes() + "." + cuota.getAnho(), // clave compuesta de mes-año
-                            cuota -> cuota,
-                            (cuota, replacement) -> cuota // en caso de duplicados, tomar la primera
-                    ));
 
             periodoColumn = 8;
+            int maxOffset = 0;
             for (CuotaPeriodoDto periodo : periodos) {
-                var cuota = cuotasMap.get(periodo.getProductoId() + "." + periodo.getMes() + "." + periodo.getAnho());
-
-                if (cuota == null) {
-                    periodoColumn += 6;
-                } else {
-                    this.setCellString(row, periodoColumn++, cuota.getProducto().getNombre(), styleNormal);
-                    this.setCellBigDecimal(row, periodoColumn++, cuota.getImporte1(), styleNormal);
-                    this.setCellOffsetDateTime(row, periodoColumn++, cuota.getVencimiento1(), styleNormal);
-                    if (!cuota.getChequeraPagos().isEmpty()) {
-                        var primerPago = cuota.getChequeraPagos().getFirst();
-                        if (primerPago != null) {
-                            this.setCellOffsetDateTime(row, periodoColumn++, primerPago.getFecha(), styleNormal);
-                            this.setCellString(row, periodoColumn++, primerPago.getTipoPago().getNombre(), styleNormal);
-                            this.setCellBigDecimal(row, periodoColumn++, primerPago.getImporte(), styleNormal);
+                log.debug("Periodo: {}", periodo.jsonify());
+                String periodoKey = periodo.getMes() + "." + periodo.getAnho();
+                var cuotasDelPeriodo = cuotasMap.get(periodoKey);
+                log.debug("Cuotas del Periodo -> {}", Jsonifier.builder(cuotasDelPeriodo).build());
+                if (cuotasDelPeriodo != null) {
+                    int offset = 0;
+                    for (var cuota : cuotasDelPeriodo) {
+                        Row innerRow;
+                        if (offset == 0) {
+                            innerRow = row;
                         } else {
-                            periodoColumn += 3;
+                            var verifyRow = sheet.getRow(fila + offset);
+                            innerRow = (verifyRow == null) ? sheet.createRow(fila + offset) : verifyRow;
                         }
-                    } else {
-                        periodoColumn += 3;
+
+                        this.setCellString(innerRow, 0, MessageFormat.format("{0}/{1}/{2,number,#}", chequeraSerie.getFacultadId(), chequeraSerie.getTipoChequeraId(), chequeraSerie.getChequeraSerieId()), styleNormal);
+                        this.setCellBigDecimal(innerRow, 1, chequeraSerie.getPersona().getPersonaId(), styleNormal);
+                        this.setCellString(innerRow, 2, MessageFormat.format("{0}, {1}", chequeraSerie.getPersona().getApellido(), chequeraSerie.getPersona().getNombre()), styleNormal);
+                        this.setCellString(innerRow, 3, chequeraSerie.getFacultad().getNombre(), styleNormal);
+                        this.setCellString(innerRow, 4, chequeraSerie.getGeografica().getNombre(), styleNormal);
+                        this.setCellString(innerRow, 5, carrera, styleNormal);
+                        this.setCellInteger(innerRow, 6, chequeraSerie.getCursoId(), styleNormal);
+                        this.setCellString(innerRow, 7, chequeraSerie.getTipoChequera().getNombre(), styleNormal);
+
+                        log.debug("Cuota a escribir -> {}", Jsonifier.builder(cuota).build());
+                        this.setCellString(innerRow, periodoColumn, cuota.getProducto().getNombre(), styleNormal);
+                        this.setCellBigDecimal(innerRow, periodoColumn + 1, cuota.getImporte1(), styleNormal);
+                        this.setCellOffsetDateTime(innerRow, periodoColumn + 2, cuota.getVencimiento1(), styleNormal);
+
+                        if (!cuota.getChequeraPagos().isEmpty()) {
+                            var pago = cuota.getChequeraPagos().getFirst();
+                            log.debug("Pago a escribir -> {}", Jsonifier.builder(pago).build());
+                            this.setCellOffsetDateTime(innerRow, periodoColumn + 3, pago.getFecha(), styleNormal);
+                            this.setCellString(innerRow, periodoColumn + 4, pago.getTipoPago().getNombre(), styleNormal);
+                            this.setCellBigDecimal(innerRow, periodoColumn + 5, pago.getImporte(), styleNormal);
+                        }
+                        if (++offset > maxOffset) {
+                            maxOffset = offset;
+                        }
                     }
                 }
-
+                periodoColumn += 6;
             }
+            fila = fila + maxOffset - 1;
         }
 
         for (int column = 0; column < sheet.getRow(0).getPhysicalNumberOfCells(); column++)
@@ -259,12 +268,12 @@ public class ChequerasService {
     private void setCellOffsetDateTime(Row row, int column, OffsetDateTime value, CellStyle style) {
         Cell cell = row.createCell(column);
         cell.setCellValue(new Date(value.toInstant().toEpochMilli()));
-        
+
         // Crear un estilo específico para fechas
         CellStyle dateStyle = row.getSheet().getWorkbook().createCellStyle();
         dateStyle.cloneStyleFrom(style);
         dateStyle.setDataFormat(row.getSheet().getWorkbook().createDataFormat().getFormat("dd/MM/yyyy"));
-        
+
         cell.setCellStyle(dateStyle);
     }
 

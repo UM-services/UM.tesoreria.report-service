@@ -1,12 +1,18 @@
 package um.tesoreria.report.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChequeraSerieDto {
 
     private Long chequeraId;
@@ -44,5 +50,18 @@ public class ChequeraSerieDto {
     private LectivoDto lectivo;
     private ArancelTipoDto arancelTipo;
     private GeograficaDto geografica;
+
+    public String jsonify() {
+        try {
+            return JsonMapper
+                    .builder()
+                    .findAndAddModules()
+                    .build()
+                    .writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return "jsonify error: " + e.getMessage();
+        }
+    }
 
 }
