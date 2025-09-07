@@ -1,6 +1,7 @@
 package um.tesoreria.report.client.core;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import um.tesoreria.report.domain.dto.ChequeraSerieDto;
@@ -15,5 +16,10 @@ public interface ChequeraSerieClient {
 
     @GetMapping("/lectivo/test/{facultadId}/{lectivoId}")
     List<ChequeraSerieDto> findAllByLectivoTest(@PathVariable Integer facultadId, @PathVariable Integer lectivoId);
+
+    @GetMapping("/sede/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}")
+    List<ChequeraSerieDto> findAllBySede(@PathVariable Integer facultadId,
+                                         @PathVariable Integer lectivoId,
+                                         @PathVariable Integer geograficaId);
 
 }
