@@ -5,6 +5,24 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-09-07
+### Added
+- **feat:** Nuevo endpoint REST para generación de planilla de detalle por sede (`/planilla/detalle/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}`).
+- **feat:** Cliente Feign `GeograficaClient` y DTOs asociados (`GeograficaDto`, `FacultadDto`, etc.).
+- **feat:** Nuevos DTOs para soporte de reportes avanzados (`ClaseChequeraDto`, `DomicilioDto`, `LectivoDto`, `PersonaDto`, `TipoChequeraDto`, y core DTOs).
+- **feat:** Utilidad `Tool` para generación de archivos y mejoras en utilidades de serialización JSON (`Jsonifier`).
+
+### Changed
+- **refactor:** Lógica de generación de reportes en `ChequerasService` ahora soporta sede (`geograficaId`) y maneja mejor los datos nulos.
+- **refactor:** Mejoras en logging y trazabilidad de generación de reportes.
+- **chore:** Configuración avanzada de timeouts para Feign en `bootstrap.yml`.
+
+### Fixed
+- **fix:** Validaciones adicionales para evitar errores con datos nulos en reportes.
+
+### Docs
+- **docs:** Actualización de diagramas y documentación automática para reflejar nuevos endpoints y estructura de DTOs.
+
 ## [0.3.0] - 2025-09-05
 ### Added
 - **feat:** Añadido método `jsonify()` y utilitario `Jsonifier` para serialización JSON en DTOs.

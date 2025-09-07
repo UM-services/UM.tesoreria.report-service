@@ -18,12 +18,13 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 ## Características Principales
 
 - Generación de reportes Excel de chequeras y planillas
-- Integración con servicios core de Tesorería (Chequera, Legajo, Lectivo)
+- **NUEVO:** Generación de planillas de detalle por sede (geográfica)
+- Integración con servicios core de Tesorería (Chequera, Legajo, Lectivo, Geográfica)
 - Endpoints REST para descarga de reportes
 - Configuración avanzada con Spring Cloud y Consul
 - Documentación automática con SpringDoc OpenAPI
 - Diagramas de arquitectura y flujo de reportes
-- **NUEVO:** Utilidades de serialización JSON para debugging y pruebas
+- Utilidades de serialización JSON para debugging y pruebas
 
 
 ## Tecnologías

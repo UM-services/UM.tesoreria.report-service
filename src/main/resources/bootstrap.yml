@@ -15,6 +15,12 @@ spring:
   application:
     name: tesoreria-report-service
   cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 10000
+            readTimeout: 200000
     consul:
       host: ${app.consul.host}
       port: ${app.consul.port}

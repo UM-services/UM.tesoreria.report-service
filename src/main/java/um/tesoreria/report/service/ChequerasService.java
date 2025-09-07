@@ -30,6 +30,7 @@ public class ChequerasService {
     private final ChequeraClient chequeraClient;
     private final LegajoClient legajoClient;
     private final ChequeraPagoClient chequeraPagoClient;
+    private final GeograficaClient geograficaClient;
 
     public ChequerasService(Environment environment,
                             ChequeraSerieClient chequeraSerieClient,
@@ -37,7 +38,7 @@ public class ChequerasService {
                             ChequeraCuotaClient chequeraCuotaClient,
                             ChequeraClient chequeraClient,
                             LegajoClient legajoClient,
-                            ChequeraPagoClient chequeraPagoClient) {
+                            ChequeraPagoClient chequeraPagoClient, GeograficaClient geograficaClient) {
         this.environment = environment;
         this.chequeraSerieClient = chequeraSerieClient;
         this.lectivoClient = lectivoClient;
@@ -45,13 +46,14 @@ public class ChequerasService {
         this.chequeraClient = chequeraClient;
         this.legajoClient = legajoClient;
         this.chequeraPagoClient = chequeraPagoClient;
+        this.geograficaClient = geograficaClient;
     }
 
-    public String generatePlanillaDetalle(Integer facultadId, Integer lectivoId) {
+    public String generatePlanillaDetalle(Integer facultadId, Integer lectivoId, Integer geograficaId) {
         log.debug("Processing ChequerasService.generatePlanillaDetalle");
         String path = environment.getProperty("path.reports");
 
-        String filename = path + MessageFormat.format("cuotas.{0}.{1}.xlsx", facultadId, lectivoId);
+        String filename = path + MessageFormat.format("cuotas.{0}.{1}.{2}.xlsx", facultadId, lectivoId, geograficaId);
 
         Workbook book = new XSSFWorkbook();
         CellStyle styleNormal = book.createCellStyle();
@@ -65,6 +67,8 @@ public class ChequerasService {
         styleBold.setFont(fontBold);
 
         var lectivo = lectivoClient.findByLectivoId(lectivoId);
+        var geografica = geograficaClient.findByGeograficaId(geograficaId);
+        log.debug("Leyendo legajos");
         var legajos = legajoClient.findAllByFacultadId(facultadId)
                 .stream()
                 .collect(Collectors.toMap(
@@ -72,6 +76,7 @@ public class ChequerasService {
                         legajo -> legajo,
                         (legajo, replacement) -> legajo
                 ));
+        log.debug("Legajos leídos");
 
         Sheet sheet = book.createSheet(lectivo.getNombre());
         Row row;
@@ -88,7 +93,7 @@ public class ChequerasService {
 
         // Cambiar en producción
         // var allChequeras = chequeraSerieClient.findAllByLectivoTest(facultadId, lectivoId);
-        var allChequeras = chequeraSerieClient.findAllByLectivo(facultadId, lectivoId);
+        var allChequeras = chequeraSerieClient.findAllBySede(facultadId, lectivoId, geograficaId);
 
         var periodos = chequeraCuotaClient.findAllPeriodosLectivo(lectivoId);
 
@@ -105,6 +110,7 @@ public class ChequerasService {
 
         for (ChequeraSerieDto chequeraSerie : allChequeras) {
             log.debug("ChequeraSerie: {}", chequeraSerie.jsonify());
+            log.debug("Determinando carrera");
             // determina carrera
             var carrera = "";
             var key = chequeraSerie.getPersonaId() + "." + chequeraSerie.getDocumentoId();
@@ -118,6 +124,7 @@ public class ChequerasService {
                     carrera = MessageFormat.format("{0}/{1}", plan, legajo.getCarrera().getNombre());
                 }
             }
+            log.debug("Carrera determinada");
 
             var cuotas = chequeraClient.findAllCuotaPagosByChequera(chequeraSerie.getFacultadId(), chequeraSerie.getTipoChequeraId(), chequeraSerie.getChequeraSerieId(), chequeraSerie.getAlternativaId());
             log.debug("Cuotas: {}", Jsonifier.builder(cuotas).build());
@@ -128,8 +135,10 @@ public class ChequerasService {
 
             row = sheet.createRow(++fila);
             this.setCellString(row, 0, MessageFormat.format("{0}/{1}/{2,number,#}", chequeraSerie.getFacultadId(), chequeraSerie.getTipoChequeraId(), chequeraSerie.getChequeraSerieId()), styleNormal);
-            this.setCellBigDecimal(row, 1, chequeraSerie.getPersona().getPersonaId(), styleNormal);
-            this.setCellString(row, 2, MessageFormat.format("{0}, {1}", chequeraSerie.getPersona().getApellido(), chequeraSerie.getPersona().getNombre()), styleNormal);
+            if (chequeraSerie.getPersona() != null) {
+                this.setCellBigDecimal(row, 1, chequeraSerie.getPersona().getPersonaId(), styleNormal);
+                this.setCellString(row, 2, MessageFormat.format("{0}, {1}", chequeraSerie.getPersona().getApellido(), chequeraSerie.getPersona().getNombre()), styleNormal);
+            }
             this.setCellString(row, 3, chequeraSerie.getFacultad().getNombre(), styleNormal);
             this.setCellString(row, 4, chequeraSerie.getGeografica().getNombre(), styleNormal);
             this.setCellString(row, 5, carrera, styleNormal);
@@ -155,8 +164,10 @@ public class ChequerasService {
                         }
 
                         this.setCellString(innerRow, 0, MessageFormat.format("{0}/{1}/{2,number,#}", chequeraSerie.getFacultadId(), chequeraSerie.getTipoChequeraId(), chequeraSerie.getChequeraSerieId()), styleNormal);
-                        this.setCellBigDecimal(innerRow, 1, chequeraSerie.getPersona().getPersonaId(), styleNormal);
-                        this.setCellString(innerRow, 2, MessageFormat.format("{0}, {1}", chequeraSerie.getPersona().getApellido(), chequeraSerie.getPersona().getNombre()), styleNormal);
+                        if (chequeraSerie.getPersona() != null) {
+                            this.setCellBigDecimal(innerRow, 1, chequeraSerie.getPersona().getPersonaId(), styleNormal);
+                            this.setCellString(innerRow, 2, MessageFormat.format("{0}, {1}", chequeraSerie.getPersona().getApellido(), chequeraSerie.getPersona().getNombre()), styleNormal);
+                        }
                         this.setCellString(innerRow, 3, chequeraSerie.getFacultad().getNombre(), styleNormal);
                         this.setCellString(innerRow, 4, chequeraSerie.getGeografica().getNombre(), styleNormal);
                         this.setCellString(innerRow, 5, carrera, styleNormal);
