@@ -5,6 +5,13 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2025-10-22
+### Changed
+- **chore:** Actualización de Spring Boot de 3.5.5 a 3.5.6.
+
+### Fixed
+- **fix:** Mejora en la lógica de generación de reportes en `ChequerasService` para manejar cuotas dadas de baja, mostrando "Baja" en lugar del importe cuando corresponde.
+
 ## [0.4.0] - 2025-09-07
 ### Added
 - **feat:** Nuevo endpoint REST para generación de planilla de detalle por sede (`/planilla/detalle/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}`).

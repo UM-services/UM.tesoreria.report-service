@@ -92,7 +92,7 @@ public class ChequerasService {
         this.setCellString(row, 7, "Tipo Chequera", styleBold);
 
         // Cambiar en producción
-        // var allChequeras = chequeraSerieClient.findAllByLectivoTest(facultadId, lectivoId);
+//        var allChequeras = chequeraSerieClient.findAllByLectivoTest(facultadId, lectivoId);
         var allChequeras = chequeraSerieClient.findAllBySede(facultadId, lectivoId, geograficaId);
 
         var periodos = chequeraCuotaClient.findAllPeriodosLectivo(lectivoId);
@@ -176,7 +176,11 @@ public class ChequerasService {
 
                         log.debug("Cuota a escribir -> {}", Jsonifier.builder(cuota).build());
                         this.setCellString(innerRow, periodoColumn, cuota.getProducto().getNombre(), styleNormal);
-                        this.setCellBigDecimal(innerRow, periodoColumn + 1, cuota.getImporte1(), styleNormal);
+                        if (cuota.getBaja() == 0) {
+                            this.setCellBigDecimal(innerRow, periodoColumn + 1, cuota.getImporte1(), styleNormal);
+                        } else {
+                            this.setCellString(innerRow, periodoColumn + 1, "Baja", styleNormal);
+                        }
                         this.setCellOffsetDateTime(innerRow, periodoColumn + 2, cuota.getVencimiento1(), styleNormal);
 
                         if (!cuota.getChequeraPagos().isEmpty()) {
