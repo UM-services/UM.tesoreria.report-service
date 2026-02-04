@@ -5,6 +5,21 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-02-03
+### Changed
+- **chore:** Actualización de Spring Boot de 3.5.8 a 4.0.2
+- **chore:** Actualización de Java de 24 a 25
+- **chore:** Actualización de Spring Cloud de 2025.0.0 a 2025.1.0
+- **chore:** Actualización de SpringDoc OpenAPI de 2.8.10 a 3.0.1
+- **chore:** Actualización de Apache POI de 5.4.1 a 5.5.1
+- **chore:** Actualización de ModelMapper de 3.2.4 a 3.2.6
+- **chore:** Actualización de Apache Commons Lang3 de 3.18.0 a 3.20.0
+- **chore:** Actualización de GitHub Actions workflow para usar JDK 25
+- **chore:** Actualización de Dockerfile para usar JDK/JRE 25
+
+### Removed
+- **chore:** Eliminación de configuración executable del Spring Boot Maven Plugin
+
 ## [0.4.1] - 2025-10-22
 ### Changed
 - **chore:** Actualización de Spring Boot de 3.5.5 a 3.5.6.

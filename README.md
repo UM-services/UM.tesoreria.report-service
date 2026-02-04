@@ -1,11 +1,11 @@
 
 # UM.tesoreria.report-service
 
-[![Java](https://img.shields.io/badge/Java-21-blue)](https://www.java.com/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen)](https://spring.io/projects/spring-boot)
-[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.0.0-brightgreen)](https://spring.io/projects/spring-cloud)
-[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-2.8.10-blue)](https://springdoc.org/)
-[![Apache POI](https://img.shields.io/badge/Apache%20POI-5.4.1-red)](https://poi.apache.org/)
+[![Java](https://img.shields.io/badge/Java-25-blue)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen)](https://spring.io/projects/spring-boot)
+[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.1.0-brightgreen)](https://spring.io/projects/spring-cloud)
+[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-3.0.1-blue)](https://springdoc.org/)
+[![Apache POI](https://img.shields.io/badge/Apache%20POI-5.5.1-red)](https://poi.apache.org/)
 [![Lombok](https://img.shields.io/badge/Lombok-1.18.30-pink)](https://projectlombok.org/)
 
 ## Estado del Proyecto
@@ -29,12 +29,12 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 
 ## Tecnologías
 
-- Java 21
-- Spring Boot 3.5.5
-- Spring Cloud 2025.0.0
+- Java 25
+- Spring Boot 4.0.2
+- Spring Cloud 2025.1.0
 - Caffeine (para caché)
-- SpringDoc OpenAPI 2.8.10
-- Apache POI 5.4.1 (para reportes Excel)
+- SpringDoc OpenAPI 3.0.1
+- Apache POI 5.5.1 (para reportes Excel)
 - Lombok (para reducir código boilerplate)
 
 ## Documentación
@@ -49,7 +49,7 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 
 ### Requisitos Previos
 
-- JDK 21
+- JDK 25
 - Maven 3.8.8 o superior
 - Git
 - Docker (opcional, para desarrollo con contenedores)
