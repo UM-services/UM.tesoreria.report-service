@@ -248,6 +248,8 @@ public class ChequerasService {
         this.setCellString(row, 8, "Fecha Pago", styleBold);
         this.setCellString(row, 9, "Importe Pagado", styleBold);
         this.setCellString(row, 10, "Tipo Pago", styleBold);
+        this.setCellString(row, 11, "e-mail Institucional", styleBold);
+        this.setCellString(row, 12, "e-mail Personal", styleBold);
 
         for (var chequeraPago : chequeraPagoClient.findAllByFacultadIdAndTipoChequeraIdAndLectivoId(facultadId, tipoChequeraId, lectivoId)) {
             row = sheet.createRow(++fila);
@@ -262,6 +264,8 @@ public class ChequerasService {
             this.setCellOffsetDateTime(row, 8, chequeraPago.getFecha(), styleNormal);
             this.setCellBigDecimal(row, 9, chequeraPago.getImporte(), styleNormal);
             this.setCellString(row, 10, chequeraPago.getTipoPago().getNombre(), styleNormal);
+            this.setCellString(row, 11, chequeraPago.getChequeraCuota().getChequeraSerie().getDomicilio().getEmailInstitucional(), styleNormal);
+            this.setCellString(row, 12, chequeraPago.getChequeraCuota().getChequeraSerie().getDomicilio().getEmailPersonal(), styleNormal);
         }
 
         for (int column = 0; column < sheet.getRow(0).getPhysicalNumberOfCells(); column++)

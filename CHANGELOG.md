@@ -5,6 +5,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-02-16
+
+### Added
+- **feat:** Agregadas columnas de email en la planilla de pagos (`generatePlanillaPagos`)
+  - Nueva columna: "e-mail Institucional" - extrae el email institucional del domicilio asociado a la chequera
+  - Nueva columna: "e-mail Personal" - extrae el email personal del domicilio asociado a la chequera
+  - Los datos se obtienen a través de la relación `chequeraPago.chequeraCuota.chequeraSerie.domicilio`
+
 ## [0.5.0] - 2026-02-03
 ### Changed
 - **chore:** Actualización de Spring Boot de 3.5.8 a 4.0.2

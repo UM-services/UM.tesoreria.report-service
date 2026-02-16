@@ -4,14 +4,27 @@ sequenceDiagram
     participant ChequerasController
     participant ChequerasService
     participant ChequeraClient
+    participant ChequeraPagoClient
+    participant LegajoClient
 
-    User->>+ChequerasController: GET /chequeras/reporte
-    ChequerasController->>+ChequerasService: generarReporte()
-    ChequerasService->>+ChequeraClient: getDatosChequera()
-    ChequeraClient-->>-ChequerasService: Datos Chequera
-    ChequerasService->>+ChequeraClient: getPagos()
-    ChequeraClient-->>-ChequerasService: Lista de Pagos
-    ChequerasService-->>-ChequerasController: Reporte (Excel)
+    User->>+ChequerasController: GET /planilla/pagos/{facultadId}/{tipoChequeraId}/{lectivoId}
+    ChequerasController->>+ChequerasService: generatePlanillaPagos()
+    ChequerasService->>+ChequeraPagoClient: findAllByFacultadIdAndTipoChequeraIdAndLectivoId()
+    ChequeraPagoClient-->>-ChequerasService: Lista de ChequeraPago
+    loop Para cada pago
+        ChequerasService->>ChequerasService: Extraer datos de cuota, serie y domicilio
+        Note over ChequerasService: Incluye email institucional y personal<br/>desde chequeraSerie.domicilio
+    end
+    ChequerasService-->>-ChequerasController: Reporte Excel con columnas de email
+    ChequerasController-->>-User: ResponseEntity<byte[]>
+
+    User->>+ChequerasController: GET /planilla/detalle/{facultadId}/{lectivoId}/{geograficaId}
+    ChequerasController->>+ChequerasService: generatePlanillaDetalle()
+    ChequerasService->>+ChequeraClient: findAllCuotaPagosByChequera()
+    ChequeraClient-->>-ChequerasService: Datos de cuotas y pagos
+    ChequerasService->>+LegajoClient: findAllByFacultadId()
+    LegajoClient-->>-ChequerasService: Información de legajos
+    ChequerasService-->>-ChequerasController: Reporte Excel detallado
     ChequerasController-->>-User: ResponseEntity<byte[]>
 ```
 ```
