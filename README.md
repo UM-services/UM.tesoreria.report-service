@@ -19,6 +19,7 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 
 - Generación de reportes Excel de chequeras y planillas
 - **NUEVO:** Generación de planillas de detalle por sede (geográfica)
+- **NUEVO:** Planillas de pagos con información de contacto (emails institucional y personal)
 - Integración con servicios core de Tesorería (Chequera, Legajo, Lectivo, Geográfica)
 - Endpoints REST para descarga de reportes
 - Configuración avanzada con Spring Cloud y Consul
