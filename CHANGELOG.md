@@ -5,6 +5,17 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-03-22
+
+### Added
+- **feat:** Agregada columna "id MP" (ID de Mercado Pago) en la planilla de detalle de chequeras (`generatePlanillaDetalle`)
+  - Nueva columna muestra el identificador de Mercado Pago para cada pago
+  - Los datos se obtienen del campo `idMercadoPago` en `ChequeraPagoDto`
+
+### Changed
+- **refactor:** Uso de `@RequiredArgsConstructor` de Lombok en `ChequerasController` y `ChequerasService`
+- **refactor:** Eliminación de constructores explícitos, utilizando generación automática de Lombok
+
 ## [0.6.0] - 2026-02-16
 
 ### Added
