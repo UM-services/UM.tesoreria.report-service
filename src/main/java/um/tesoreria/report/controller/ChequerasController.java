@@ -1,6 +1,7 @@
 package um.tesoreria.report.controller;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +17,11 @@ import static um.tesoreria.report.util.Tool.generateFile;
 
 @RestController
 @RequestMapping("/api/tesoreria/report/chequeras")
+@RequiredArgsConstructor
 @Slf4j
 public class ChequerasController {
 
     private final ChequerasService service;
-
-    public ChequerasController(ChequerasService service) {
-        this.service = service;
-    }
 
     @GetMapping("/planilla/detalle/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}")
     public ResponseEntity<Resource> generatePlanillaDetalle(@PathVariable Integer facultadId,

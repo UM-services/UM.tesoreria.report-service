@@ -1,5 +1,6 @@
 package um.tesoreria.report.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class ChequerasService {
 
@@ -31,23 +33,6 @@ public class ChequerasService {
     private final LegajoClient legajoClient;
     private final ChequeraPagoClient chequeraPagoClient;
     private final GeograficaClient geograficaClient;
-
-    public ChequerasService(Environment environment,
-                            ChequeraSerieClient chequeraSerieClient,
-                            LectivoClient lectivoClient,
-                            ChequeraCuotaClient chequeraCuotaClient,
-                            ChequeraClient chequeraClient,
-                            LegajoClient legajoClient,
-                            ChequeraPagoClient chequeraPagoClient, GeograficaClient geograficaClient) {
-        this.environment = environment;
-        this.chequeraSerieClient = chequeraSerieClient;
-        this.lectivoClient = lectivoClient;
-        this.chequeraCuotaClient = chequeraCuotaClient;
-        this.chequeraClient = chequeraClient;
-        this.legajoClient = legajoClient;
-        this.chequeraPagoClient = chequeraPagoClient;
-        this.geograficaClient = geograficaClient;
-    }
 
     public String generatePlanillaDetalle(Integer facultadId, Integer lectivoId, Integer geograficaId) {
         log.debug("Processing ChequerasService.generatePlanillaDetalle");
@@ -106,6 +91,7 @@ public class ChequerasService {
             this.setCellString(row, periodoColumn++, MessageFormat.format("{0}/{1,number,#} Pago", periodo.getMes(), periodo.getAnho()), styleBold);
             this.setCellString(row, periodoColumn++, MessageFormat.format("{0}/{1,number,#} Medio", periodo.getMes(), periodo.getAnho()), styleBold);
             this.setCellString(row, periodoColumn++, MessageFormat.format("{0}/{1,number,#} Pagado", periodo.getMes(), periodo.getAnho()), styleBold);
+            this.setCellString(row, periodoColumn++, MessageFormat.format("{0}/{1,number,#} id MP", periodo.getMes(), periodo.getAnho()), styleBold);
         }
 
         for (ChequeraSerieDto chequeraSerie : allChequeras) {
@@ -189,13 +175,14 @@ public class ChequerasService {
                             this.setCellOffsetDateTime(innerRow, periodoColumn + 3, pago.getFecha(), styleNormal);
                             this.setCellString(innerRow, periodoColumn + 4, pago.getTipoPago().getNombre(), styleNormal);
                             this.setCellBigDecimal(innerRow, periodoColumn + 5, pago.getImporte(), styleNormal);
+                            this.setCellString(innerRow, periodoColumn + 6, pago.getIdMercadoPago(), styleNormal);
                         }
                         if (++offset > maxOffset) {
                             maxOffset = offset;
                         }
                     }
                 }
-                periodoColumn += 6;
+                periodoColumn += 7;
             }
             fila = fila + maxOffset - 1;
         }
