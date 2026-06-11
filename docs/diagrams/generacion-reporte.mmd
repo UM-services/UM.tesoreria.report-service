@@ -24,8 +24,8 @@ sequenceDiagram
     ChequeraClient-->>-ChequerasService: Datos de cuotas y pagos
     ChequerasService->>+LegajoClient: findAllByFacultadId()
     LegajoClient-->>-ChequerasService: Información de legajos
-    Note over ChequerasService: Incluye columna id MP (Mercado Pago)<br/>para cada pago en el período
-    ChequerasService-->>-ChequerasController: Reporte Excel con columna id MP
+    Note over ChequerasService: Incluye columnas: id MP (Mercado Pago),<br/>HPUM y Beca para cada chequera
+    ChequerasService-->>-ChequerasController: Reporte Excel con columnas<br/>id MP, HPUM y Beca
     ChequerasController-->>-User: ResponseEntity<byte[]>
 ```
 ```

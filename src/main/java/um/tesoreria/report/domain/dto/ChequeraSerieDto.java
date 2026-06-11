@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import um.tesoreria.report.util.Jsonifier;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -38,6 +39,14 @@ public class ChequeraSerieDto {
     private Byte enviado = 0;
     private Byte retenida = 0;
     private Long version;
+    private Byte hpum = 0;
+    private BigDecimal becaPorcentaje = BigDecimal.ZERO;
+    private String becaResolucion;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "UTC")
+    private OffsetDateTime becaFecha;
+
+    private Long becaUserId;
     private Integer cuotasDeuda = 0;
     private BigDecimal importeDeuda = BigDecimal.ZERO;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "UTC")
@@ -52,16 +61,7 @@ public class ChequeraSerieDto {
     private GeograficaDto geografica;
 
     public String jsonify() {
-        try {
-            return JsonMapper
-                    .builder()
-                    .findAndAddModules()
-                    .build()
-                    .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            return "jsonify error: " + e.getMessage();
-        }
+        return Jsonifier.builder(this).build();
     }
 
 }

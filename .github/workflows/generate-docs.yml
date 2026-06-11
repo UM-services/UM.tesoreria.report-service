@@ -43,6 +43,7 @@ jobs:
           curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/issues?state=all&per_page=100" > issues.json
           curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${{ github.repository }}/pulls?state=all&per_page=100" > prs.json
           
+          # --- Write HTML header (before diagram sections) ---
           cat > docs/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="es">
@@ -74,8 +75,34 @@ jobs:
                   <p>Última actualización: <span id="update-date"></span></p>
               </div>
               <div id="stats" class="stats"></div>
-              <div id="architecture" class="section"></div>
-              <div id="sequence-diagram" class="section"></div>
+          EOF
+          
+          # --- Inject architecture diagram ---
+          cat >> docs/index.html << 'EOF'
+              <div id="architecture" class="section">
+                  <h2>🏗️ Arquitectura General</h2>
+                  <div class="mermaid">
+          EOF
+          sed '1d;$d' docs/diagrams/arquitectura-general.mmd >> docs/index.html
+          cat >> docs/index.html << 'EOF'
+                  </div>
+              </div>
+          EOF
+          
+          # --- Inject sequence diagram ---
+          cat >> docs/index.html << 'EOF'
+              <div id="sequence-diagram" class="section">
+                  <h2>🔄 Diagrama de Secuencia: Generación de Reportes</h2>
+                  <div class="mermaid">
+          EOF
+          sed '1d;$d' docs/diagrams/generacion-reporte.mmd >> docs/index.html
+          cat >> docs/index.html << 'EOF'
+                  </div>
+              </div>
+          EOF
+          
+          # --- Write HTML footer (dependencies, milestones, scripts) ---
+          cat >> docs/index.html << 'EOF'
               <div id="dependencies" class="section">
                   <h2>🌳 Grafo de Dependencias</h2>
                   <p>El siguiente es el árbol de dependencias completo del proyecto, generado por Maven.</p>
