@@ -75,6 +75,8 @@ public class ChequerasService {
         this.setCellString(row, 5, "Carrera", styleBold);
         this.setCellString(row, 6, "Curso", styleBold);
         this.setCellString(row, 7, "Tipo Chequera", styleBold);
+        this.setCellString(row, 8, "HPUM", styleBold);
+        this.setCellString(row, 9, "Beca", styleBold);
 
         // Cambiar en producción
 //        var allChequeras = chequeraSerieClient.findAllByLectivoTest(facultadId, lectivoId);
@@ -83,7 +85,7 @@ public class ChequerasService {
         var periodos = chequeraCuotaClient.findAllPeriodosLectivo(lectivoId);
 
         // Add period headers starting from column 8
-        int periodoColumn = 8;
+        int periodoColumn = 10;
         for (CuotaPeriodoDto periodo : periodos) {
             this.setCellString(row, periodoColumn++, MessageFormat.format("{0}/{1,number,#} Producto", periodo.getMes(), periodo.getAnho()), styleBold);
             this.setCellString(row, periodoColumn++, MessageFormat.format("{0}/{1,number,#} Importe", periodo.getMes(), periodo.getAnho()), styleBold);
@@ -130,8 +132,10 @@ public class ChequerasService {
             this.setCellString(row, 5, carrera, styleNormal);
             this.setCellInteger(row, 6, chequeraSerie.getCursoId(), styleNormal);
             this.setCellString(row, 7, chequeraSerie.getTipoChequera().getNombre(), styleNormal);
+            this.setCellString(row, 8, chequeraSerie.getHpum() == 1 ? "X" : "", styleNormal);
+            this.setCellBigDecimal(row, 9, chequeraSerie.getBecaPorcentaje(), styleNormal);
 
-            periodoColumn = 8;
+            periodoColumn = 10;
             int maxOffset = 0;
             for (CuotaPeriodoDto periodo : periodos) {
                 log.debug("Periodo: {}", periodo.jsonify());
@@ -159,6 +163,8 @@ public class ChequerasService {
                         this.setCellString(innerRow, 5, carrera, styleNormal);
                         this.setCellInteger(innerRow, 6, chequeraSerie.getCursoId(), styleNormal);
                         this.setCellString(innerRow, 7, chequeraSerie.getTipoChequera().getNombre(), styleNormal);
+                        this.setCellString(innerRow, 8, chequeraSerie.getHpum() == 1 ? "X" : "", styleNormal);
+                        this.setCellBigDecimal(innerRow, 9, chequeraSerie.getBecaPorcentaje(), styleNormal);
 
                         log.debug("Cuota a escribir -> {}", Jsonifier.builder(cuota).build());
                         this.setCellString(innerRow, periodoColumn, cuota.getProducto().getNombre(), styleNormal);

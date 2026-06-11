@@ -5,6 +5,33 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-06-11
+
+### Added
+- **feat:** Agregadas columnas "HPUM" y "Beca" en la planilla de detalle de chequeras (`generatePlanillaDetalle`)
+  - Nueva columna "HPUM": marca con "X" si la chequera tiene habilitado HPUM (campo `hpum` en `ChequeraSerieDto`)
+  - Nueva columna "Beca": muestra el porcentaje de beca asociado (`becaPorcentaje` en `ChequeraSerieDto`)
+  - Nuevos campos en DTO: `becaResolucion`, `becaFecha`, `becaUserId` para soporte completo de datos de beca
+- **chore:** Nueva dependencia `commons-fileupload:1.6.0` para manejo de subida de archivos
+
+### Changed
+- **refactor:** Extracción del método `jsonify()` en `ChequeraSerieDto` a la utilidad `Jsonifier.builder(this).build()`
+- **chore:** Actualización de Spring Boot de 4.0.5 a 4.0.7
+- **chore:** Actualización de GitHub Actions:
+  - `actions/checkout@v4` → `v6`
+  - `actions/setup-java@v4` → `v5`
+  - `actions/cache@v4` → `v5`
+  - `actions/upload-pages-artifact@v3` → `v4`
+  - `actions/deploy-pages@v4` → `v5`
+  - `docker/login-action@v3` → `v4`
+  - `docker/metadata-action@v5` → `v6`
+  - `docker/setup-buildx-action@v3` → `v4`
+  - `docker/build-push-action@v6` → `v7`
+
+### Docs
+- **docs:** Actualización de diagramas Mermaid para reflejar nuevas columnas HPUM y Beca
+- **docs:** Corrección en pipeline de documentación para incluir diagramas Mermaid en la página generada
+
 ## [0.7.0] - 2026-03-22
 
 ### Added
