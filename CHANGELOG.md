@@ -5,6 +5,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2026-06-27
+
+### Fixed
+- **fix:** Corregido formato de zona horaria en serialización JSON de fechas (`Z` → `XX`) en 8 DTOs (`ChequeraCuotaDto`, `ChequeraSerieDto`, `DomicilioDto`, `LectivoDto`, `ChequeraCuotaPagosDto`, `ChequeraPagoDto`, `LegajoDto`, `PlanDto`) para compatibilidad con ISO 8601
+
+### Changed
+- **perf:** Optimización de E/S paralela en `ChequerasService.generatePlanillaDetalle()` usando Virtual Threads con Semaphore (límite 20 concurrencia) para mejorar rendimiento en consultas a core-service
+- **perf:** Cache de `CellStyle` de fechas para evitar creación redundante por cada celda en ambas planillas
+- **perf:** `autoSizeColumn` limitado a las primeras 10 columnas; ancho fijo (~15-16 caracteres) para columnas repetitivas de períodos
+- **chore:** Actualización de Spring Boot de 4.0.7 a 4.1.0
+- **chore:** Actualización de Spring Cloud de 2025.1.0 a 2025.1.2
+- **refactor:** Logs condicionales con `isDebugEnabled()` y uso de `log.error` en lugar de `log.debug` para errores de escritura
+
 ## [0.8.0] - 2026-06-11
 
 ### Added

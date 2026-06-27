@@ -27,7 +27,7 @@ public class ChequeraSerieDto {
     private Integer cursoId;
     private Byte asentado;
     private Integer geograficaId;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXX", timezone = "UTC")
     private OffsetDateTime fecha;
     private Integer cuotasPagadas;
     private String observaciones;
@@ -43,13 +43,13 @@ public class ChequeraSerieDto {
     private BigDecimal becaPorcentaje = BigDecimal.ZERO;
     private String becaResolucion;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXX", timezone = "UTC")
     private OffsetDateTime becaFecha;
 
     private Long becaUserId;
     private Integer cuotasDeuda = 0;
     private BigDecimal importeDeuda = BigDecimal.ZERO;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssZ", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXX", timezone = "UTC")
     private OffsetDateTime ultimoEnvio;
 
     private FacultadDto facultad;
