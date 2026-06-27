@@ -5,17 +5,17 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.7</version>
+        <version>4.1.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ar.edu</groupId>
     <artifactId>um.tesoreria.report</artifactId>
-    <version>0.8.0</version>
+    <version>0.8.1</version>
     <name>UM.tesoreria.report-service</name>
     <description>Spring Boot Report Service</description>
     <properties>
         <java.version>25</java.version>
-        <spring-cloud.version>2025.1.0</spring-cloud.version>
+        <spring-cloud.version>2025.1.2</spring-cloud.version>
         <sonar.organization>um-services</sonar.organization>
         <sonar.projectKey>UM-services_UM.tesoreria.report-service</sonar.projectKey>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
