@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@EnableFeignClients(basePackages = "um.tesoreria.report.client")
+@EnableFeignClients(basePackages = "um.tesoreria.report.hexagonal.chequeras.infrastructure.client")
 @PropertySource("classpath:config/reports.properties")
 public class ReportConfiguration {
 

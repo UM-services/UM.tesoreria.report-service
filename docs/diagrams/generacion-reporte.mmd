@@ -1,30 +1,39 @@
 ```mermaid
 sequenceDiagram
     participant User
-    participant ChequerasController
-    participant ChequerasService
-    participant ChequeraClient
-    participant ChequeraPagoClient
-    participant LegajoClient
+    participant ChequerasReportController
+    participant ChequerasReportService
+    participant GeneratePlanillaPagosUseCase
+    participant GeneratePlanillaDetalleUseCase
+    participant Adapters as "Feign Adapters"
+    participant CoreService as "Core Services"
 
-    User->>+ChequerasController: GET /planilla/pagos/{facultadId}/{tipoChequeraId}/{lectivoId}
-    ChequerasController->>+ChequerasService: generatePlanillaPagos()
-    ChequerasService->>+ChequeraPagoClient: findAllByFacultadIdAndTipoChequeraIdAndLectivoId()
-    ChequeraPagoClient-->>-ChequerasService: Lista de ChequeraPago
+    User->>+ChequerasReportController: GET /planilla/pagos/{facultadId}/{tipoChequeraId}/{lectivoId}
+    ChequerasReportController->>+ChequerasReportService: generatePlanillaPagos()
+    ChequerasReportService->>+GeneratePlanillaPagosUseCase: execute()
+    GeneratePlanillaPagosUseCase->>+Adapters: findAllByFacultadIdAndTipoChequeraIdAndLectivoId()
+    Adapters->>+CoreService: GET /api/tesoreria/core/chequeraPago
+    CoreService-->>-Adapters: Lista de ChequeraPago
+    Adapters-->>-GeneratePlanillaPagosUseCase: Lista de ChequeraPago
     loop Para cada pago
-        ChequerasService->>ChequerasService: Extraer datos de cuota, serie y domicilio
-        Note over ChequerasService: Incluye email institucional y personal<br/>desde chequeraSerie.domicilio
+        GeneratePlanillaPagosUseCase->>GeneratePlanillaPagosUseCase: Extraer datos de cuota, serie y domicilio
+        Note over GeneratePlanillaPagosUseCase: Incluye email institucional y personal<br/>desde chequeraSerie.domicilio
     end
-    ChequerasService-->>-ChequerasController: Reporte Excel con columnas de email
-    ChequerasController-->>-User: ResponseEntity<byte[]>
+    GeneratePlanillaPagosUseCase-->>-ChequerasReportService: Reporte Excel generado
+    ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
+    ChequerasReportController-->>-User: ResponseEntity<Resource>
 
-    User->>+ChequerasController: GET /planilla/detalle/{facultadId}/{lectivoId}/{geograficaId}
-    ChequerasController->>+ChequerasService: generatePlanillaDetalle()
-    ChequerasService->>+ChequeraClient: findAllCuotaPagosByChequera()
-    ChequeraClient-->>-ChequerasService: Datos de cuotas y pagos
-    ChequerasService->>+LegajoClient: findAllByFacultadId()
-    LegajoClient-->>-ChequerasService: Información de legajos
-    Note over ChequerasService: Incluye columnas: id MP (Mercado Pago),<br/>HPUM y Beca para cada chequera
-    ChequerasService-->>-ChequerasController: Reporte Excel con columnas<br/>id MP, HPUM y Beca
-    ChequerasController-->>-User: ResponseEntity<byte[]>
+    User->>+ChequerasReportController: GET /planilla/detalle/{facultadId}/{lectivoId}/{geograficaId}
+    ChequerasReportController->>+ChequerasReportService: generatePlanillaDetalle()
+    ChequerasReportService->>+GeneratePlanillaDetalleUseCase: execute()
+    GeneratePlanillaDetalleUseCase->>+Adapters: findAllCuotaPagosByChequera()
+    Adapters->>+CoreService: GET /api/tesoreria/core/chequera
+    CoreService-->>-Adapters: Datos de cuotas y pagos
+    GeneratePlanillaDetalleUseCase->>+Adapters: findAllByFacultadId()
+    Adapters->>+CoreService: GET /api/tesoreria/core/legajo
+    CoreService-->>-Adapters: Información de legajos
+    Note over GeneratePlanillaDetalleUseCase: Incluye columnas: id MP (Mercado Pago),<br/>HPUM y Beca para cada chequera
+    GeneratePlanillaDetalleUseCase-->>-ChequerasReportService: Reporte Excel generado
+    ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
+    ChequerasReportController-->>-User: ResponseEntity<Resource>
 ```
