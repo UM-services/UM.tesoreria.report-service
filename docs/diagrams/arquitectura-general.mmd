@@ -1,13 +1,45 @@
 ```mermaid
 graph TD
-    subgraph "Sistema de Tesorería"
-        A["Usuario Final (API)"] --> B("Report Service");
-        B --> C["ChequerasController"];
-        C --> D["ChequerasService"];
-        D --> E["Facade: ChequeraClient"];
-        E --> F["Core Service: Chequeras"];
-        E --> G["Core Service: Legajos"];
-        E --> H["Core Service: Lectivo"];
-        E --> I["Core Service: Geográfica"];
+    A["Usuario Final (API)"]
+    B["Core Service: Chequeras"]
+    C["Core Service: Legajos"]
+    D["Core Service: Lectivo"]
+    E["Core Service: Geográfica"]
+
+    subgraph "Hexagonal: Infrastructure Layer"
+        F["ChequerasReportController"]
+        G["ChequeraSerieClient"]
+        H["ChequeraPagoClient"]
+        I["ChequeraCuotaClient"]
+        J["Feign Adapters"]
+        K["ChequerasMapper"]
+        G --> J
+        H --> J
+        I --> J
+        J --> K
     end
+
+    subgraph "Hexagonal: Application Layer"
+        L["ChequerasReportService"]
+        M["GeneratePlanillaDetalleUseCase"]
+        N["GeneratePlanillaPagosUseCase"]
+        L --> M
+        L --> N
+    end
+
+    subgraph "Hexagonal: Domain Layer"
+        O["Domain Model (18 entities)"]
+        P["Port In: UseCase Interfaces"]
+        Q["Port Out: Repository Interfaces"]
+    end
+
+    A --> F
+    F --> L
+    M -.-> P
+    N -.-> P
+    Q -.-> J
+    J --> B
+    J --> C
+    J --> D
+    J --> E
 ```

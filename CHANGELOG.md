@@ -5,6 +5,26 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2026-06-27
+
+### Added
+- **feat:** Migración a arquitectura hexagonal para el módulo de chequeras
+  - Nueva capa `domain` con modelo (`ArancelTipo`, `Carrera`, `ChequeraCuota`, `ChequeraCuotaPagos`, `ChequeraPago`, `ChequeraSerie`, `ClaseChequera`, `CuotaPeriodo`, `Domicilio`, `Facultad`, `Geografica`, `Lectivo`, `Legajo`, `Persona`, `Plan`, `Producto`, `TipoChequera`, `TipoPago`)
+  - Nuevos puertos de dominio: 2 interfaces de use case (`GeneratePlanillaDetalleUseCase`, `GeneratePlanillaPagosUseCase`) y 7 repositorios
+  - Nueva capa `application` con servicio fachada (`ChequerasReportService`) e implementaciones de use cases
+  - Nueva capa `infrastructure` con 7 adaptadores Feign, mapper (`ChequerasMapper`) y controlador REST
+
+### Changed
+- **refactor:** Migración de `ChequerasController` → `ChequerasReportController` en paquete hexagonal
+- **refactor:** Migración de `ChequerasService` → `ChequerasReportService` + use cases desacoplados
+- **refactor:** Migración de todos los DTOs a `hexagonal.chequeras.infrastructure.client.dto`
+- **refactor:** Migración de todos los clientes Feign a `hexagonal.chequeras.infrastructure.client`
+- **refactor:** ReportConfiguration actualizado para escanear nuevo paquete de clients
+- **refactor:** PingController simplificado usando `@RequiredArgsConstructor` de Lombok
+- **refactor:** Eliminación de exlusión log4j2 de spring-boot-starter
+- **chore:** Actualización de SpringDoc OpenAPI de 3.0.2 a 3.0.3
+- **chore:** Eliminación de versión explícita de Lombok en annotation processor paths
+
 ## [0.8.1] - 2026-06-27
 
 ### Fixed
