@@ -23,8 +23,10 @@ graph TD
         L["ChequerasReportService"]
         M["GeneratePlanillaDetalleUseCase"]
         N["GeneratePlanillaPagosUseCase"]
+        R["GeneratePlanillaDetalleVerticalUseCase"]
         L --> M
         L --> N
+        L --> R
     end
 
     subgraph "Hexagonal: Domain Layer"
@@ -37,6 +39,7 @@ graph TD
     F --> L
     M -.-> P
     N -.-> P
+    R -.-> P
     Q -.-> J
     J --> B
     J --> C
