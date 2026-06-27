@@ -5,6 +5,21 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2026-06-27
+
+### Added
+- **feat:** Nueva planilla de detalle vertical (`generatePlanillaDetalleVertical`)
+  - Nuevo `GeneratePlanillaDetalleVerticalUseCase` y su implementación para generar planillas Excel con diseño vertical
+  - Nuevo endpoint `GET /planilla/detalle/vertical/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}`
+  - Incluye las mismas columnas que la planilla de detalle horizontal: Chequera, DU, Apellido/Nombre, Facultad, Sede, Carrera, Curso, Tipo Chequera, Tipo Arancel, HPUM, Beca, Alternativa, Producto, Cuota, Año, Mes, Importe, Vencimiento, Pago, Medio, Pagado, id MP
+  - Optimización de E/S paralela con Virtual Threads y Semaphore (límite 20 concurrencia)
+- **feat:** Método `jsonify()` añadido a `ChequeraCuotaPagos` para serialización JSON en debugging
+
+### Changed
+- **refactor:** `ChequerasReportService` actualizado para delegar en `GeneratePlanillaDetalleVerticalUseCase`
+- **chore:** Banner de aplicación limpiado y simplificado
+- **chore:** Actualización de versión a `0.10.0`
+
 ## [0.9.0] - 2026-06-27
 
 ### Added

@@ -18,7 +18,7 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 ## Características Principales
 
 - Generación de reportes Excel de chequeras y planillas (incluye columnas HPUM, Beca e ID Mercado Pago)
-- Generación de planillas de detalle por sede (geográfica)
+- Generación de planillas de detalle por sede (geográfica): horizontal y vertical
 - Planillas de pagos con información de contacto (emails institucional y personal)
 - Integración con servicios core de Tesorería (Chequera, Legajo, Lectivo, Geográfica)
 - Endpoints REST para descarga de reportes

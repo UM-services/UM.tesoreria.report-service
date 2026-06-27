@@ -1,6 +1,8 @@
 package um.tesoreria.report.hexagonal.chequeras.domain.model;
 
 import lombok.*;
+import um.tesoreria.report.util.Jsonifier;
+
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -40,4 +42,8 @@ public class ChequeraCuotaPagos {
     private Integer tramoId;
     private Producto producto;
     private List<ChequeraPago> chequeraPagos;
+
+    public String jsonify() {
+        return Jsonifier.builder(this).build();
+    }
 }

@@ -5,6 +5,7 @@ sequenceDiagram
     participant ChequerasReportService
     participant GeneratePlanillaPagosUseCase
     participant GeneratePlanillaDetalleUseCase
+    participant GeneratePlanillaDetalleVerticalUseCase
     participant Adapters as "Feign Adapters"
     participant CoreService as "Core Services"
 
@@ -34,6 +35,22 @@ sequenceDiagram
     CoreService-->>-Adapters: Información de legajos
     Note over GeneratePlanillaDetalleUseCase: Incluye columnas: id MP (Mercado Pago),<br/>HPUM y Beca para cada chequera
     GeneratePlanillaDetalleUseCase-->>-ChequerasReportService: Reporte Excel generado
+    ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
+    ChequerasReportController-->>-User: ResponseEntity<Resource>
+
+    User->>+ChequerasReportController: GET /planilla/detalle/vertical/{facultadId}/{lectivoId}/{geograficaId}
+    ChequerasReportController->>+ChequerasReportService: generatePlanillaDetalleVertical()
+    ChequerasReportService->>+GeneratePlanillaDetalleVerticalUseCase: execute()
+    GeneratePlanillaDetalleVerticalUseCase->>+Adapters: findAllBySede()
+    Adapters->>+CoreService: GET /api/tesoreria/core/chequeraSerie
+    CoreService-->>-Adapters: Lista de ChequeraSerie
+    GeneratePlanillaDetalleVerticalUseCase->>+Adapters: findAllByFacultadId()
+    Adapters->>+CoreService: GET /api/tesoreria/core/legajo
+    CoreService-->>-Adapters: Información de legajos
+    GeneratePlanillaDetalleVerticalUseCase->>+Adapters: findAllCuotaPagosByChequera() (paralelo)
+    Adapters-->>-GeneratePlanillaDetalleVerticalUseCase: Cuotas con pagos
+    Note over GeneratePlanillaDetalleVerticalUseCase: Optimización paralela con Virtual Threads<br/>y Semaphore (límite 20 concurrencia)
+    GeneratePlanillaDetalleVerticalUseCase-->>-ChequerasReportService: Reporte Excel generado
     ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
     ChequerasReportController-->>-User: ResponseEntity<Resource>
 ```
