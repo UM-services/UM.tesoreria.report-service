@@ -5,6 +5,11 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.1] - 2026-07-02
+
+### Changed
+- **chore:** Añadido log de depuración en `GeneratePlanillaDetalleVerticalUseCaseImpl` para trazabilidad en lectura de pagos
+
 ## [0.10.0] - 2026-06-27
 
 ### Added

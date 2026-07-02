@@ -10,7 +10,7 @@
     </parent>
     <groupId>ar.edu</groupId>
     <artifactId>um.tesoreria.report</artifactId>
-    <version>0.10.0</version>
+    <version>0.10.1</version>
     <name>UM.tesoreria.report-service</name>
     <description>Spring Boot Report Service</description>
     <properties>
