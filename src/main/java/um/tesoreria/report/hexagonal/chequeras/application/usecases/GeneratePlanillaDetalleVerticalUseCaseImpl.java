@@ -107,6 +107,7 @@ public class GeneratePlanillaDetalleVerticalUseCaseImpl implements GeneratePlani
                 .map(chequeraSerie -> CompletableFuture.runAsync(() -> {
                     try {
                         semaphore.acquire();
+                        log.debug("\n\nLeyendo pagos\n\n");
                         List<ChequeraCuotaPagos> cuotas = chequeraRepository.findAllCuotaPagosByChequera(
                             chequeraSerie.getFacultadId(),
                             chequeraSerie.getTipoChequeraId(),
