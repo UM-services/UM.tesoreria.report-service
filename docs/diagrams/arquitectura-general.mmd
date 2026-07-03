@@ -5,8 +5,9 @@ graph TD
     C["Core Service: Legajos"]
     D["Core Service: Lectivo"]
     E["Core Service: Geográfica"]
+    EE["Core Service: Contable"]
 
-    subgraph "Hexagonal: Infrastructure Layer"
+    subgraph "Hexagonal: Infrastructure Layer (Chequeras)"
         F["ChequerasReportController"]
         G["ChequeraSerieClient"]
         H["ChequeraPagoClient"]
@@ -19,30 +20,48 @@ graph TD
         J --> K
     end
 
+    subgraph "Hexagonal: Infrastructure Layer (Contable)"
+        F2["ContableReportController"]
+        G2["LectivoTotalImputacionClient"]
+        J2["FeignLectivoTotalImputacionRepositoryAdapter"]
+        K2["ContableMapper"]
+        G2 --> J2
+        J2 --> K2
+    end
+
     subgraph "Hexagonal: Application Layer"
         L["ChequerasReportService"]
         M["GeneratePlanillaDetalleUseCase"]
         N["GeneratePlanillaPagosUseCase"]
         R["GeneratePlanillaDetalleVerticalUseCase"]
+        L2["ContableReportService"]
+        S["GenerateLectivoTotalImputacionReportUseCaseImpl"]
         L --> M
         L --> N
         L --> R
+        L2 --> S
     end
 
     subgraph "Hexagonal: Domain Layer"
-        O["Domain Model (18 entities)"]
+        O["Domain Model Chequeras (18 entities)"]
+        O2["Domain Model Contable (2 entities)"]
         P["Port In: UseCase Interfaces"]
         Q["Port Out: Repository Interfaces"]
     end
 
     A --> F
+    A --> F2
     F --> L
+    F2 --> L2
     M -.-> P
     N -.-> P
     R -.-> P
+    S -.-> P
     Q -.-> J
+    Q -.-> J2
     J --> B
     J --> C
     J --> D
     J --> E
+    J2 --> EE
 ```

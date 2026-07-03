@@ -6,6 +6,11 @@ sequenceDiagram
     participant GeneratePlanillaPagosUseCase
     participant GeneratePlanillaDetalleUseCase
     participant GeneratePlanillaDetalleVerticalUseCase
+    participant ContableReportController
+    participant ContableReportService
+    participant GenerateLectivoTotalImputacionReportUseCaseImpl
+    participant LectivoTotalImputacionClient
+    participant LectivoClient
     participant Adapters as "Feign Adapters"
     participant CoreService as "Core Services"
 
@@ -53,4 +58,19 @@ sequenceDiagram
     GeneratePlanillaDetalleVerticalUseCase-->>-ChequerasReportService: Reporte Excel generado
     ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
     ChequerasReportController-->>-User: ResponseEntity<Resource>
+
+    User->>+ContableReportController: GET /api/tesoreria/report/contable/planilla/lectivo/{lectivoId}
+    ContableReportController->>+ContableReportService: generateReport()
+    ContableReportService->>+GenerateLectivoTotalImputacionReportUseCaseImpl: generateReport()
+    GenerateLectivoTotalImputacionReportUseCaseImpl->>+LectivoTotalImputacionClient: findAllByLectivo()
+    LectivoTotalImputacionClient->>+CoreService: GET /api/tesoreria/core/lectivototalimputacion/lectivo/{lectivoId}
+    CoreService-->>-LectivoTotalImputacionClient: Lista de LectivoTotalImputacionDto
+    LectivoTotalImputacionClient-->>-GenerateLectivoTotalImputacionReportUseCaseImpl: Lista de LectivoTotalImputacionDto
+    GenerateLectivoTotalImputacionReportUseCaseImpl->>+LectivoClient: findByLectivoId()
+    LectivoClient->>+CoreService: GET /api/tesoreria/core/lectivo/{lectivoId}
+    CoreService-->>-LectivoClient: Datos del lectivo
+    Note over GenerateLectivoTotalImputacionReportUseCaseImpl: Genera Excel con columnas:<br/>Facultad, Tipo Chequera, Geográfica,<br/>Producto, Cuenta Contable, Nombre Cuenta
+    GenerateLectivoTotalImputacionReportUseCaseImpl-->>-ContableReportService: filename del reporte
+    ContableReportService-->>-ContableReportController: filename
+    ContableReportController-->>-User: ResponseEntity<Resource>
 ```
