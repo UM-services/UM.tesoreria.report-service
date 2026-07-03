@@ -5,6 +5,21 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] - 2026-07-03
+
+### Added
+- **feat:** Nuevo módulo contable con arquitectura hexagonal para generar planilla de "Lectivo Total Imputación"
+  - Nuevos modelos de dominio: `Cuenta`, `LectivoTotalImputacion`
+  - Nuevo puerto de entrada: `GenerateLectivoTotalImputacionReportUseCase`
+  - Nuevo puerto de salida: `LectivoTotalImputacionRepository`
+  - Nueva capa `application` con servicio fachada (`ContableReportService`) e implementación de caso de uso
+  - Nueva capa `infrastructure` con cliente Feign, adaptador, DTOs (`CuentaDto`, `LectivoTotalImputacionDto`), mapper (`ContableMapper`) y controlador REST
+  - Nuevo endpoint: `GET /api/tesoreria/report/contable/planilla/lectivo/{lectivoId}`
+  - Reporte Excel generado con columnas: Facultad, Tipo Chequera, Geográfica, Producto, Cuenta Contable, Nombre Cuenta
+
+### Changed
+- **chore:** Ampliado escaneo de `@EnableFeignClients` en `ReportConfiguration` para incluir todos los paquetes hexagonales (`um.tesoreria.report.hexagonal`)
+
 ## [0.10.1] - 2026-07-02
 
 ### Changed
