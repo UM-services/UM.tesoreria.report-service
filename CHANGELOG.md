@@ -5,6 +5,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.1] - 2026-09-22
+
+### Added
+- **chore:** Nuevos pipelines de despliegue en GitHub Actions para los entornos develop y staging
+  - `deploy-develop.yml`: verifica la aplicación con `mvn -B verify` (JDK 25, Temurin) en PRs y pushes a `develop`; en push construye y publica la imagen Docker etiquetada con `${{ github.sha }}` (Buildx + caché GHA) y despliega desde un runner self-hosted ejecutando `deploy-tesoreria-report-develop.sh`
+  - `deploy-staging.yml`: mismo flujo de verificación, build/publish y despliegue para la rama `staging`, ejecutando `deploy-tesoreria-report-staging.sh`
+  - Ambos workflows usan `concurrency` propia, `permissions: contents: read` y environments `develop`/`staging`
+
 ## [0.11.0] - 2026-07-03
 
 ### Added
