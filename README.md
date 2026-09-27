@@ -2,7 +2,7 @@
 # UM.tesoreria.report-service
 
 [![Java](https://img.shields.io/badge/Java-25-blue)](https://www.java.com/)
-[![Version](https://img.shields.io/badge/Version-0.11.0-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
+[![Version](https://img.shields.io/badge/Version-0.11.1-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-brightgreen)](https://spring.io/projects/spring-boot)
 [![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.1.2-brightgreen)](https://spring.io/projects/spring-cloud)
 [![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-3.0.3-blue)](https://springdoc.org/)
