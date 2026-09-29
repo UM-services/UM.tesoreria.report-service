@@ -32,8 +32,8 @@ public class ChequerasReportController {
 
     @GetMapping("/planilla/detalle/vertical/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}")
     public ResponseEntity<Resource> generatePlanillaDetalleVertical(@PathVariable Integer facultadId,
-                                                            @PathVariable Integer lectivoId,
-                                                            @PathVariable Integer geograficaId) throws FileNotFoundException {
+                                                                    @PathVariable Integer lectivoId,
+                                                                    @PathVariable Integer geograficaId) throws FileNotFoundException {
         log.debug("Processing ChequerasReportController.generatePlanillaDetalleVertical");
         return generateFile(service.generatePlanillaDetalleVertical(facultadId, lectivoId, geograficaId), "planilla.xlsx");
     }
@@ -44,6 +44,17 @@ public class ChequerasReportController {
                                                           @PathVariable Integer lectivoId) throws FileNotFoundException {
         log.debug("Processing ChequerasReportController.generatePlanillaPagos");
         return generateFile(service.generatePlanillaPagos(facultadId, tipoChequeraId, lectivoId), "pagos.xlsx");
+    }
+
+    @GetMapping("/estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}/debitoTipo/{debitoTipoId}")
+    public ResponseEntity<Resource> generateEstadoChequera(@PathVariable Integer facultadId,
+                                                           @PathVariable Integer tipoChequeraId,
+                                                           @PathVariable Long chequeraSerieId,
+                                                           @PathVariable Integer alternativaId,
+                                                           @PathVariable Integer debitoTipoId) throws FileNotFoundException {
+        log.debug("Processing ChequerasReportController.generateEstadoChequera");
+        return generateFile(service.generateEstadoChequera(facultadId, tipoChequeraId, chequeraSerieId, alternativaId, debitoTipoId),
+                "estado-chequera.pdf");
     }
 
 }
