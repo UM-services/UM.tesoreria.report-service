@@ -121,18 +121,44 @@ public class OpenPdfEstadoChequeraPdfGenerator implements EstadoChequeraPdfGener
         document.add(titulo);
         document.add(espacio(6));
 
-        document.add(datoEncabezado("Titular: (" + plano(estado.personaId()) + ") ",
-                texto(estado.personaApellido()) + ", " + texto(estado.personaNombre())));
-        document.add(datoEncabezado("Tipo Chequera: ", texto(estado.tipoChequeraNombre())));
-        document.add(datoEncabezado("Tipo Arancel: ", texto(estado.arancelTipoDescripcion())));
-        document.add(datoEncabezado("Ciclo Lectivo: ", texto(estado.lectivoNombre())));
-        document.add(datoEncabezado("Porcentaje de beca: ", porcentaje(estado.becaPorcentaje())));
-        document.add(datoEncabezado("Tipo Impresion: ", texto(estado.tipoImpresionNombre())));
+        // Grilla de tarjetas (2 columnas) en vez de un renglón por dato: cada tarjeta es una tabla
+        // anidada de 1 celda (fondo suave) dentro de la celda de la grilla exterior, cuyo padding
+        // es lo que deja el espacio entre tarjetas — PdfPTable no tiene "cellSpacing" propio.
+        PdfPTable grilla = new PdfPTable(new float[]{1, 1});
+        grilla.setWidthPercentage(100);
+        grilla.addCell(tarjeta("Titular", "(" + plano(estado.personaId()) + ") "
+                + texto(estado.personaApellido()) + ", " + texto(estado.personaNombre())));
+        grilla.addCell(tarjeta("Tipo Chequera", texto(estado.tipoChequeraNombre())));
+        grilla.addCell(tarjeta("Tipo Arancel", texto(estado.arancelTipoDescripcion())));
+        grilla.addCell(tarjeta("Ciclo Lectivo", texto(estado.lectivoNombre())));
+        grilla.addCell(tarjeta("Porcentaje de beca", porcentaje(estado.becaPorcentaje())));
+        grilla.addCell(tarjeta("Tipo Impresion", texto(estado.tipoImpresionNombre())));
+        document.add(grilla);
+        document.add(espacio(5));
 
-        Paragraph chequera = datoEncabezado("Chequera: ",
-                numero(estado.facultadId()) + "/" + numero(estado.tipoChequeraId()) + "/" + numero(estado.chequeraSerieId()));
+        // Insignia HPUM (a la izquierda, bien visible) y código de chequera (a la derecha), en la misma fila
+        PdfPTable pie = new PdfPTable(new float[]{1, 2});
+        pie.setWidthPercentage(100);
+        PdfPCell insignia = new PdfPCell(new Phrase(estado.hpum() ? "HPUM" : "NO HPUM",
+                new Font(Font.HELVETICA, 8, Font.BOLD, estado.hpum() ? Color.WHITE : COLOR_ETIQUETA)));
+        insignia.setBackgroundColor(estado.hpum() ? COLOR_ACENTO : Color.WHITE);
+        insignia.setBorder(estado.hpum() ? Rectangle.NO_BORDER : Rectangle.BOX);
+        insignia.setBorderColor(COLOR_LINEA);
+        insignia.setHorizontalAlignment(Element.ALIGN_CENTER);
+        insignia.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        insignia.setPadding(5f);
+        pie.addCell(insignia);
+
+        PdfPCell chequeraCell = new PdfPCell();
+        chequeraCell.setBorder(Rectangle.NO_BORDER);
+        chequeraCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        Paragraph chequera = new Paragraph(new Phrase("Chequera: ", new Font(Font.HELVETICA, 11, Font.NORMAL, COLOR_ETIQUETA)));
+        chequera.add(new Phrase(numero(estado.facultadId()) + "/" + numero(estado.tipoChequeraId()) + "/"
+                + numero(estado.chequeraSerieId()), new Font(Font.HELVETICA, 11, Font.BOLD)));
         chequera.setAlignment(Element.ALIGN_RIGHT);
-        document.add(chequera);
+        chequeraCell.addElement(chequera);
+        pie.addCell(chequeraCell);
+        document.add(pie);
 
         document.add(espacio(5));
         Paragraph leyenda = new Paragraph("NO VALIDO COMO COMPROBANTE DE PAGO",
@@ -142,10 +168,30 @@ public class OpenPdfEstadoChequeraPdfGenerator implements EstadoChequeraPdfGener
         document.add(espacio(5));
     }
 
-    private Paragraph datoEncabezado(String etiqueta, String valor) {
-        Paragraph paragraph = new Paragraph(new Phrase(etiqueta, new Font(Font.HELVETICA, 11, Font.NORMAL, COLOR_ETIQUETA)));
-        paragraph.add(new Phrase(valor, new Font(Font.HELVETICA, 11, Font.BOLD)));
-        return paragraph;
+    /**
+     * Una "tarjeta" de la grilla del encabezado: etiqueta chica en gris arriba, valor en negrita
+     * abajo, sobre un fondo suave. Es una tabla anidada de 1 celda porque el padding de la celda
+     * exterior (sin fondo) es lo que separa una tarjeta de la siguiente.
+     */
+    private PdfPCell tarjeta(String etiqueta, String valor) {
+        Paragraph contenido = new Paragraph(etiqueta.toUpperCase(Locale.ROOT), new Font(Font.HELVETICA, 7, Font.BOLD, COLOR_ETIQUETA));
+        contenido.add(Chunk.NEWLINE);
+        contenido.add(new Chunk(valor, new Font(Font.HELVETICA, 11, Font.BOLD)));
+        PdfPCell interior = new PdfPCell();
+        interior.addElement(contenido);
+        interior.setBackgroundColor(COLOR_FILA_ALTERNA);
+        interior.setBorder(Rectangle.NO_BORDER);
+        interior.setPadding(6f);
+
+        PdfPTable tarjeta = new PdfPTable(1);
+        tarjeta.setWidthPercentage(100);
+        tarjeta.addCell(interior);
+
+        PdfPCell exterior = new PdfPCell();
+        exterior.addElement(tarjeta);
+        exterior.setBorder(Rectangle.NO_BORDER);
+        exterior.setPadding(3f);
+        return exterior;
     }
 
     // ------------------------------------------------------------------ hoja 1: productos
@@ -231,10 +277,13 @@ public class OpenPdfEstadoChequeraPdfGenerator implements EstadoChequeraPdfGener
         table.addCell(celda(new PdfPCell(new Phrase(fecha(cuota.fechaPago(), ""), bold8)),
                 borde, fondo, Element.ALIGN_CENTER));
 
-        // 6: Pagado, con la referencia del pago (archivo del banco / "MercadoPago") debajo
+        // 6: Pagado, con la referencia del pago (archivo del banco / "MercadoPago") debajo — un
+        // salto de línea chico de por medio, para separarla un poco del importe
         Phrase pagado = new Phrase();
         pagado.add(new Chunk(cuota.importePagado() != null ? importes.format(cuota.importePagado()) : SIN_DATO, bold8));
         if (cuota.referenciaPago() != null && !cuota.referenciaPago().isEmpty()) {
+            pagado.add(Chunk.NEWLINE);
+            pagado.add(new Chunk(" ", new Font(Font.HELVETICA, 3)));
             pagado.add(Chunk.NEWLINE);
             pagado.add(new Chunk(cuota.referenciaPago(), new Font(Font.HELVETICA, 6, Font.NORMAL, COLOR_ETIQUETA)));
         }

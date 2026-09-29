@@ -21,6 +21,7 @@ public record EstadoChequeraDto(
         BigDecimal becaPorcentaje,
         String tipoImpresionNombre,
         Integer alternativaId,
+        boolean hpum,
         List<ProductoEstadoDto> productos,
         List<DebitoEstadoDto> debitos) {
 }

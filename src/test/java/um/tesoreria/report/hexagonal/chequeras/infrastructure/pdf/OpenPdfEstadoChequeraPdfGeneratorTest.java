@@ -33,10 +33,10 @@ class OpenPdfEstadoChequeraPdfGeneratorTest {
         String page1 = text(pdf, 1);
         assertThat(page1)
                 .contains("Estado de Chequera", "Hoja: 1", "Facultad de Ingeniería", "UNIVERSIDAD DE MENDOZA",
-                        "Titular: (12345678) MUÑOZ, Ana Ejemplo", "Tipo Chequera: Matrícula y Arancel",
-                        "Tipo Arancel: Ciclo Completo", "Ciclo Lectivo: Lectivo 2026 - 2027",
-                        "Porcentaje de beca: 15%", "Tipo Impresion: Rapipago", "Chequera: 1/2/12345",
-                        "NO VALIDO COMO COMPROBANTE DE PAGO", "Alternativa: 1");
+                        "TITULAR", "(12345678) MUÑOZ, Ana Ejemplo", "TIPO CHEQUERA", "Matrícula y Arancel",
+                        "TIPO ARANCEL", "Ciclo Completo", "CICLO LECTIVO", "Lectivo 2026 - 2027",
+                        "PORCENTAJE DE BECA", "15%", "TIPO IMPRESION", "Rapipago", "HPUM",
+                        "Chequera: 1/2/12345", "NO VALIDO COMO COMPROBANTE DE PAGO", "Alternativa: 1");
         assertThat(page1.indexOf("Producto: Matrícula")).isNotNegative()
                 .isLessThan(page1.indexOf("Producto: Arancel"));
     }
@@ -61,8 +61,8 @@ class OpenPdfEstadoChequeraPdfGeneratorTest {
 
         String page2 = text(pdf, 2);
         assertThat(page2)
-                .contains("Hoja: 2", "Estado de Chequera", "Titular: (12345678) MUÑOZ, Ana Ejemplo",
-                        "Tipo Impresion: Rapipago", "Chequera: 1/2/12345")
+                .contains("Hoja: 2", "Estado de Chequera", "TITULAR", "(12345678) MUÑOZ, Ana Ejemplo",
+                        "TIPO IMPRESION", "Rapipago", "HPUM", "Chequera: 1/2/12345")
                 .contains("Adhesión de chequera al Débito Automático")
                 .contains(EstadoChequeraFixture.CBU, "0011000100", "04/06/2026 00:00");
     }
@@ -81,7 +81,7 @@ class OpenPdfEstadoChequeraPdfGeneratorTest {
     void generate_toleratesMissingData() throws IOException {
         // Sin porcentaje de beca, con textos nulos, sin débitos y con una cuota impaga sin fechas.
         EstadoChequera sinDatos = new EstadoChequera(15, null, 2, null, 12345L, null, null, null, null, null,
-                null, null, 1,
+                null, null, 1, false,
                 List.of(new ProductoEstado(1, null, null, null, null, null,
                         List.of(new CuotaEstado(1, 3, 2026, null, null, null, null, null, null)))),
                 null);
@@ -89,7 +89,7 @@ class OpenPdfEstadoChequeraPdfGeneratorTest {
         PdfReader pdf = render(sinDatos);
 
         assertThat(pdf.getNumberOfPages()).isEqualTo(2);
-        assertThat(text(pdf, 1)).contains("Porcentaje de beca: 0%", "Hoja: 1");
+        assertThat(text(pdf, 1)).contains("PORCENTAJE DE BECA", "0%", "Hoja: 1", "NO HPUM");
         assertThat(text(pdf, 2)).contains("Hoja: 2", "Adhesión de chequera al Débito Automático");
     }
 
@@ -99,9 +99,9 @@ class OpenPdfEstadoChequeraPdfGeneratorTest {
         EstadoChequera conBeca = new EstadoChequera(base.facultadId(), base.facultadNombre(), base.tipoChequeraId(),
                 base.tipoChequeraNombre(), base.chequeraSerieId(), base.personaId(), base.personaApellido(),
                 base.personaNombre(), base.arancelTipoDescripcion(), base.lectivoNombre(), new BigDecimal("0.5000"),
-                base.tipoImpresionNombre(), base.alternativaId(), base.productos(), base.debitos());
+                base.tipoImpresionNombre(), base.alternativaId(), base.hpum(), base.productos(), base.debitos());
 
-        assertThat(text(render(conBeca), 1)).contains("Porcentaje de beca: 50%");
+        assertThat(text(render(conBeca), 1)).contains("PORCENTAJE DE BECA", "50%");
     }
 
     private PdfReader render(EstadoChequera estado) throws IOException {

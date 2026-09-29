@@ -369,6 +369,7 @@ public class ChequerasMapper {
                 dto.becaPorcentaje(),
                 dto.tipoImpresionNombre(),
                 dto.alternativaId(),
+                dto.hpum(),
                 dto.productos() == null ? Collections.emptyList()
                         : dto.productos().stream().map(this::toDomain).collect(Collectors.toList()),
                 dto.debitos() == null ? Collections.emptyList()

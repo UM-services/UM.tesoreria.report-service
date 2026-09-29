@@ -35,7 +35,7 @@ class FeignChequeraRepositoryAdapterEstadoChequeraTest {
                 "1234567890123456789012", LocalDateTime.of(2026, 7, 3, 0, 0), true, "0011000100");
         EstadoChequeraDto dto = new EstadoChequeraDto(1, "Facultad de Ingeniería", 2, "Matrícula y Arancel", 12345L,
                 new BigDecimal("12345678"), "MUÑOZ", "Ana Ejemplo", "Ciclo Completo", "Lectivo 2026 - 2027",
-                new BigDecimal("0.15"), "Rapipago", 1, List.of(producto), List.of(debito));
+                new BigDecimal("0.15"), "Rapipago", 1, true, List.of(producto), List.of(debito));
         when(client.findEstadoChequera(1, 2, 12345L, 1, 2)).thenReturn(dto);
 
         EstadoChequera estado = adapter.findEstadoChequera(1, 2, 12345L, 1, 2);
@@ -43,6 +43,7 @@ class FeignChequeraRepositoryAdapterEstadoChequeraTest {
         assertThat(estado.facultadNombre()).isEqualTo("Facultad de Ingeniería");
         assertThat(estado.personaId()).isEqualByComparingTo("12345678");
         assertThat(estado.becaPorcentaje()).isEqualByComparingTo("0.15");
+        assertThat(estado.hpum()).isTrue();
         assertThat(estado.tipoImpresionNombre()).isEqualTo("Rapipago");
         assertThat(estado.productos()).hasSize(1);
         assertThat(estado.productos().get(0).nombre()).isEqualTo("Matrícula");
@@ -63,7 +64,7 @@ class FeignChequeraRepositoryAdapterEstadoChequeraTest {
     @Test
     void findEstadoChequera_treatsMissingListsAsEmpty() {
         EstadoChequeraDto dto = new EstadoChequeraDto(1, null, 2, null, 12345L, null, null, null, null, null, null,
-                null, 1, null, null);
+                null, 1, false, null, null);
         when(client.findEstadoChequera(1, 2, 12345L, 1, 2)).thenReturn(dto);
 
         EstadoChequera estado = adapter.findEstadoChequera(1, 2, 12345L, 1, 2);

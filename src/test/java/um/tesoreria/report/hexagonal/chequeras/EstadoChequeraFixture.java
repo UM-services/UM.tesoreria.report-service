@@ -76,7 +76,7 @@ public final class EstadoChequeraFixture {
 
         return new EstadoChequera(1, "Facultad de Ingeniería", 2, "Matrícula y Arancel", 12345L,
                 new BigDecimal("12345678"), "MUÑOZ", "Ana Ejemplo", "Ciclo Completo", "Lectivo 2026 - 2027",
-                new BigDecimal("0.15"), "Rapipago", 1, productos, debitos);
+                new BigDecimal("0.15"), "Rapipago", 1, true, productos, debitos);
     }
 
     private static DebitoEstado debito(int cuotaId, String importe, LocalDate vencimiento, LocalDateTime envio,
