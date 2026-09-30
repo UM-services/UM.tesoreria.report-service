@@ -6,6 +6,9 @@ sequenceDiagram
     participant GeneratePlanillaPagosUseCase
     participant GeneratePlanillaDetalleUseCase
     participant GeneratePlanillaDetalleVerticalUseCase
+    participant GenerateEstadoChequeraUseCase
+    participant ChequeraClient
+    participant OpenPdfEstadoChequeraPdfGenerator
     participant ContableReportController
     participant ContableReportService
     participant GenerateLectivoTotalImputacionReportUseCaseImpl
@@ -58,6 +61,22 @@ sequenceDiagram
     GeneratePlanillaDetalleVerticalUseCase-->>-ChequerasReportService: Reporte Excel generado
     ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
     ChequerasReportController-->>-User: ResponseEntity<Resource>
+
+    User->>+ChequerasReportController: GET /estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}/debitoTipo/{debitoTipoId}
+    ChequerasReportController->>+ChequerasReportService: generateEstadoChequera()
+    ChequerasReportService->>+GenerateEstadoChequeraUseCase: generateEstadoChequera()
+    GenerateEstadoChequeraUseCase->>+Adapters: findEstadoChequera()
+    Adapters->>+ChequeraClient: findEstadoChequera()
+    ChequeraClient->>+CoreService: GET /api/tesoreria/core/chequera/estado/{facultadId}/{tipoChequeraId}/{chequeraSerieId}/{alternativaId}/{debitoTipoId}
+    CoreService-->>-ChequeraClient: EstadoChequeraDto
+    ChequeraClient-->>-Adapters: EstadoChequeraDto
+    Adapters-->>-GenerateEstadoChequeraUseCase: EstadoChequera
+    GenerateEstadoChequeraUseCase->>+OpenPdfEstadoChequeraPdfGenerator: generate(estado, out)
+    Note over OpenPdfEstadoChequeraPdfGenerator: Hoja 1: cuotas por producto con subtotales<br/>Hoja 2: adhesión al débito automático<br/>Logos UM/ETEC desde el classpath
+    OpenPdfEstadoChequeraPdfGenerator-->>-GenerateEstadoChequeraUseCase: PDF escrito
+    GenerateEstadoChequeraUseCase-->>-ChequerasReportService: filename
+    ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
+    ChequerasReportController-->>-User: estado-chequera.pdf
 
     User->>+ContableReportController: GET /api/tesoreria/report/contable/planilla/lectivo/{lectivoId}
     ContableReportController->>+ContableReportService: generateReport()
