@@ -352,4 +352,63 @@ public class ChequerasMapper {
                 .chequeraPagos(pagos)
                 .build();
     }
+
+    public EstadoChequera toDomain(EstadoChequeraDto dto) {
+        if (dto == null) return null;
+        return new EstadoChequera(
+                dto.facultadId(),
+                dto.facultadNombre(),
+                dto.tipoChequeraId(),
+                dto.tipoChequeraNombre(),
+                dto.chequeraSerieId(),
+                dto.personaId(),
+                dto.personaApellido(),
+                dto.personaNombre(),
+                dto.arancelTipoDescripcion(),
+                dto.lectivoNombre(),
+                dto.becaPorcentaje(),
+                dto.tipoImpresionNombre(),
+                dto.alternativaId(),
+                dto.hpum(),
+                dto.productos() == null ? Collections.emptyList()
+                        : dto.productos().stream().map(this::toDomain).collect(Collectors.toList()),
+                dto.debitos() == null ? Collections.emptyList()
+                        : dto.debitos().stream().map(this::toDomain).collect(Collectors.toList()));
+    }
+
+    public ProductoEstado toDomain(ProductoEstadoDto dto) {
+        return new ProductoEstado(
+                dto.productoId(),
+                dto.nombre(),
+                dto.tituloCuota(),
+                dto.totalCuotas(),
+                dto.total(),
+                dto.pagado(),
+                dto.cuotas() == null ? Collections.emptyList()
+                        : dto.cuotas().stream().map(this::toDomain).collect(Collectors.toList()));
+    }
+
+    public CuotaEstado toDomain(CuotaEstadoDto dto) {
+        return new CuotaEstado(
+                dto.cuotaId(),
+                dto.mes(),
+                dto.anho(),
+                dto.primerVencimiento(),
+                dto.importe(),
+                dto.ordenPago(),
+                dto.fechaPago(),
+                dto.importePagado(),
+                dto.referenciaPago());
+    }
+
+    public DebitoEstado toDomain(DebitoEstadoDto dto) {
+        return new DebitoEstado(
+                dto.cuotaId(),
+                dto.importe(),
+                dto.fechaVencimiento(),
+                dto.cbu(),
+                dto.fechaEnvio(),
+                dto.rechazado(),
+                dto.motivoRechazo());
+    }
 }
