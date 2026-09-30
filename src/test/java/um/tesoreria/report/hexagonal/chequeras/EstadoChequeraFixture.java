@@ -13,8 +13,9 @@ import java.util.List;
 
 /**
  * Datos de prueba, todos ficticios: una chequera 1/2/12345 con Matrícula de 2 cuotas y Arancel de 12
- * (las primeras 7 cuotas de Arancel pagas) y 10 cuotas adheridas al débito automático. No usar datos
- * de personas reales acá (nombres, documentos, CBU ni números de chequera).
+ * (las primeras 7 cuotas de Arancel pagas) y 10 cuotas adheridas al débito automático, mezclando
+ * Débito Directo y Débito VISA a propósito. No usar datos de personas reales acá (nombres,
+ * documentos, CBU ni números de chequera).
  */
 public final class EstadoChequeraFixture {
 
@@ -62,17 +63,19 @@ public final class EstadoChequeraFixture {
                 new ProductoEstado(1, "Matrícula", "Matrícula", 2, importe("375000"), importe("182000"), matricula),
                 new ProductoEstado(2, "Arancel", "Arancel Mensual", cuotasArancel, importe("3243000"), importe("2471000"), arancel));
 
+        // Mezcla a propósito Débito Directo y Débito VISA, para probar que el PDF los muestra a
+        // los dos juntos (con la columna "Tipo" para distinguirlos) en vez de uno solo.
         List<DebitoEstado> debitos = List.of(
-                debito(1, "182000", LocalDate.of(2026, 6, 19), LocalDateTime.of(2026, 6, 4, 0, 0), false, ""),
-                debito(2, "193000", LocalDate.of(2026, 11, 19), null, false, ""),
-                debito(2, "331000", LocalDate.of(2026, 4, 8), LocalDateTime.of(2026, 4, 6, 0, 0), false, ""),
-                debito(3, "331000", LocalDate.of(2026, 5, 8), LocalDateTime.of(2026, 5, 4, 0, 0), false, ""),
-                debito(4, "364000", LocalDate.of(2026, 6, 10), LocalDateTime.of(2026, 6, 4, 0, 0), false, ""),
-                debito(5, "364000", LocalDate.of(2026, 7, 22), LocalDateTime.of(2026, 7, 3, 0, 0), true, "0011000100"),
-                debito(6, "364000", LocalDate.of(2026, 8, 10), LocalDateTime.of(2026, 8, 3, 0, 0), false, ""),
-                debito(7, "386000", LocalDate.of(2026, 9, 10), LocalDateTime.of(2026, 9, 2, 0, 0), false, ""),
-                debito(8, "386000", LocalDate.of(2026, 10, 10), null, false, ""),
-                debito(9, "386000", LocalDate.of(2026, 11, 10), null, false, ""));
+                debito(1, "182000", LocalDate.of(2026, 6, 19), LocalDateTime.of(2026, 6, 4, 0, 0), false, "", "Débito Directo"),
+                debito(2, "193000", LocalDate.of(2026, 11, 19), null, false, "", "Débito Directo"),
+                debito(2, "331000", LocalDate.of(2026, 4, 8), LocalDateTime.of(2026, 4, 6, 0, 0), false, "", "Débito Directo"),
+                debito(3, "331000", LocalDate.of(2026, 5, 8), LocalDateTime.of(2026, 5, 4, 0, 0), false, "", "Débito Directo"),
+                debito(4, "364000", LocalDate.of(2026, 6, 10), LocalDateTime.of(2026, 6, 4, 0, 0), false, "", "Débito Directo"),
+                debito(5, "364000", LocalDate.of(2026, 7, 22), LocalDateTime.of(2026, 7, 3, 0, 0), true, "0011000100", "Débito VISA"),
+                debito(6, "364000", LocalDate.of(2026, 8, 10), LocalDateTime.of(2026, 8, 3, 0, 0), false, "", "Débito VISA"),
+                debito(7, "386000", LocalDate.of(2026, 9, 10), LocalDateTime.of(2026, 9, 2, 0, 0), false, "", "Débito VISA"),
+                debito(8, "386000", LocalDate.of(2026, 10, 10), null, false, "", "Débito VISA"),
+                debito(9, "386000", LocalDate.of(2026, 11, 10), null, false, "", "Débito VISA"));
 
         return new EstadoChequera(1, "Facultad de Ingeniería", 2, "Matrícula y Arancel", 12345L,
                 new BigDecimal("12345678"), "MUÑOZ", "Ana Ejemplo", "Ciclo Completo", "Lectivo 2026 - 2027",
@@ -80,8 +83,8 @@ public final class EstadoChequeraFixture {
     }
 
     private static DebitoEstado debito(int cuotaId, String importe, LocalDate vencimiento, LocalDateTime envio,
-                                       boolean rechazado, String motivo) {
-        return new DebitoEstado(cuotaId, importe(importe), vencimiento, CBU, envio, rechazado, motivo);
+                                       boolean rechazado, String motivo, String tipoDebito) {
+        return new DebitoEstado(cuotaId, importe(importe), vencimiento, CBU, tipoDebito, envio, rechazado, motivo);
     }
 
     private static BigDecimal importe(String value) {

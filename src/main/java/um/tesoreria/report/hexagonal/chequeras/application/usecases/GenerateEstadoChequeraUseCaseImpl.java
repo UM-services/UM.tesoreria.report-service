@@ -26,15 +26,15 @@ public class GenerateEstadoChequeraUseCaseImpl implements GenerateEstadoChequera
 
     @Override
     public String generateEstadoChequera(Integer facultadId, Integer tipoChequeraId, Long chequeraSerieId,
-                                         Integer alternativaId, Integer debitoTipoId) {
+                                         Integer alternativaId) {
         log.debug("Processing GenerateEstadoChequeraUseCaseImpl.generateEstadoChequera");
         EstadoChequera estadoChequera = chequeraRepository.findEstadoChequera(facultadId, tipoChequeraId,
-                chequeraSerieId, alternativaId, debitoTipoId);
+                chequeraSerieId, alternativaId);
 
         String path = environment.getProperty("path.reports");
         // Sin MessageFormat: {2} con un Long agregaría separador de miles (12,345).
         String filename = path + "estado-chequera." + facultadId + "." + tipoChequeraId + "." + chequeraSerieId
-                + "." + alternativaId + "." + debitoTipoId + ".pdf";
+                + "." + alternativaId + ".pdf";
 
         File file = new File(filename);
         try (OutputStream output = new BufferedOutputStream(new FileOutputStream(file))) {

@@ -46,14 +46,13 @@ public class ChequerasReportController {
         return generateFile(service.generatePlanillaPagos(facultadId, tipoChequeraId, lectivoId), "pagos.xlsx");
     }
 
-    @GetMapping("/estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}/debitoTipo/{debitoTipoId}")
+    @GetMapping("/estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}")
     public ResponseEntity<Resource> generateEstadoChequera(@PathVariable Integer facultadId,
                                                            @PathVariable Integer tipoChequeraId,
                                                            @PathVariable Long chequeraSerieId,
-                                                           @PathVariable Integer alternativaId,
-                                                           @PathVariable Integer debitoTipoId) throws FileNotFoundException {
+                                                           @PathVariable Integer alternativaId) throws FileNotFoundException {
         log.debug("Processing ChequerasReportController.generateEstadoChequera");
-        return generateFile(service.generateEstadoChequera(facultadId, tipoChequeraId, chequeraSerieId, alternativaId, debitoTipoId),
+        return generateFile(service.generateEstadoChequera(facultadId, tipoChequeraId, chequeraSerieId, alternativaId),
                 "estado-chequera.pdf");
     }
 
