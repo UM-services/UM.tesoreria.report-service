@@ -10,7 +10,7 @@
     </parent>
     <groupId>ar.edu</groupId>
     <artifactId>um.tesoreria.report</artifactId>
-    <version>0.11.1</version>
+    <version>0.12.0</version>
     <name>UM.tesoreria.report-service</name>
     <description>Spring Boot Report Service</description>
     <properties>
@@ -22,6 +22,11 @@
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>3.0.5</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>

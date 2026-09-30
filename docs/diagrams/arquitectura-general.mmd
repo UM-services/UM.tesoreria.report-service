@@ -12,11 +12,14 @@ graph TD
         G["ChequeraSerieClient"]
         H["ChequeraPagoClient"]
         I["ChequeraCuotaClient"]
+        G3["ChequeraClient"]
         J["Feign Adapters"]
         K["ChequerasMapper"]
+        N2["OpenPdfEstadoChequeraPdfGenerator"]
         G --> J
         H --> J
         I --> J
+        G3 --> J
         J --> K
     end
 
@@ -34,19 +37,21 @@ graph TD
         M["GeneratePlanillaDetalleUseCase"]
         N["GeneratePlanillaPagosUseCase"]
         R["GeneratePlanillaDetalleVerticalUseCase"]
+        T["GenerateEstadoChequeraUseCase"]
         L2["ContableReportService"]
         S["GenerateLectivoTotalImputacionReportUseCaseImpl"]
         L --> M
         L --> N
         L --> R
+        L --> T
         L2 --> S
     end
 
     subgraph "Hexagonal: Domain Layer"
-        O["Domain Model Chequeras (18 entities)"]
+        O["Domain Model Chequeras (22 entities)"]
         O2["Domain Model Contable (2 entities)"]
         P["Port In: UseCase Interfaces"]
-        Q["Port Out: Repository Interfaces"]
+        Q["Port Out: Repository and PDF Generator Interfaces"]
     end
 
     A --> F
@@ -56,9 +61,11 @@ graph TD
     M -.-> P
     N -.-> P
     R -.-> P
+    T -.-> P
     S -.-> P
     Q -.-> J
     Q -.-> J2
+    Q -.-> N2
     J --> B
     J --> C
     J --> D

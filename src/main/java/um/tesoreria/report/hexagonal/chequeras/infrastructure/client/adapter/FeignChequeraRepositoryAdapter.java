@@ -3,6 +3,7 @@ package um.tesoreria.report.hexagonal.chequeras.infrastructure.client.adapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.ChequeraCuotaPagos;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.EstadoChequera;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.out.ChequeraRepository;
 import um.tesoreria.report.hexagonal.chequeras.infrastructure.client.facade.ChequeraClient;
 import um.tesoreria.report.hexagonal.chequeras.infrastructure.client.mapper.ChequerasMapper;
@@ -21,5 +22,10 @@ public class FeignChequeraRepositoryAdapter implements ChequeraRepository {
         return client.findAllCuotaPagosByChequera(facultadId, tipoChequeraId, chequeraSerieId, alternativaId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public EstadoChequera findEstadoChequera(Integer facultadId, Integer tipoChequeraId, Long chequeraSerieId, Integer alternativaId, Integer debitoTipoId) {
+        return mapper.toDomain(client.findEstadoChequera(facultadId, tipoChequeraId, chequeraSerieId, alternativaId, debitoTipoId));
     }
 }

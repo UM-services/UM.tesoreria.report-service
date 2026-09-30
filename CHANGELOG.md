@@ -5,6 +5,24 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2026-09-30
+
+### Added
+- **feat:** Reporte "Estado de Chequera" en PDF dentro del módulo hexagonal de chequeras
+  - Nuevos modelos de dominio de lectura: `EstadoChequera`, `ProductoEstado`, `CuotaEstado`, `DebitoEstado` (titular, cuotas agrupadas por producto con subtotales, adhesión al débito automático e indicador HPUM)
+  - Nuevo puerto de entrada: `GenerateEstadoChequeraUseCase` con su implementación `GenerateEstadoChequeraUseCaseImpl`, que elimina el archivo si el PDF falla a mitad de generación
+  - Nuevos puertos de salida: `EstadoChequeraPdfGenerator` y el método `findEstadoChequera()` en `ChequeraRepository`
+  - Nuevo adaptador `OpenPdfEstadoChequeraPdfGenerator`: PDF A4 de dos hojas — hoja 1 con grilla de tarjetas del encabezado, insignia HPUM, código de chequera y bloques de cuotas por producto con subtotales; hoja 2 con la adhesión al débito automático; logos UM/ETEC cargados desde el classpath (facultad 15 usa la marca ETEC)
+  - Nuevo endpoint: `GET /api/tesoreria/report/chequeras/estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}/debitoTipo/{debitoTipoId}` (descarga `estado-chequera.pdf`)
+  - Nuevos DTOs (`EstadoChequeraDto`, `ProductoEstadoDto`, `CuotaEstadoDto`, `DebitoEstadoDto`), mapeo en `ChequerasMapper` y método `findEstadoChequera()` en `ChequeraClient`, que consume `GET /api/tesoreria/core/chequera/estado/{facultadId}/{tipoChequeraId}/{chequeraSerieId}/{alternativaId}/{debitoTipoId}` ya armado por core-service
+  - Nuevos recursos: imágenes institucionales `src/main/resources/images/marca_um.png` y `src/main/resources/images/marca_etec.png`
+  - Nuevas pruebas: `EstadoChequeraFixture`, `OpenPdfEstadoChequeraPdfGeneratorTest` y `FeignChequeraRepositoryAdapterEstadoChequeraTest`
+  - Nueva dependencia: `com.github.librepdf:openpdf:3.0.5`
+
+### Changed
+- **docs:** Diagramas Mermaid actualizados (`arquitectura-general.mmd` y `generacion-reporte.mmd`) para incluir el flujo del PDF de estado de chequera y los nuevos modelos de dominio (22 entidades en chequeras)
+- **chore:** Actualización de versión a `0.12.0`
+
 ## [0.11.1] - 2026-09-22
 
 ### Added
