@@ -25,7 +25,7 @@ public class FeignChequeraRepositoryAdapter implements ChequeraRepository {
     }
 
     @Override
-    public EstadoChequera findEstadoChequera(Integer facultadId, Integer tipoChequeraId, Long chequeraSerieId, Integer alternativaId, Integer debitoTipoId) {
-        return mapper.toDomain(client.findEstadoChequera(facultadId, tipoChequeraId, chequeraSerieId, alternativaId, debitoTipoId));
+    public EstadoChequera findEstadoChequera(Integer facultadId, Integer tipoChequeraId, Long chequeraSerieId, Integer alternativaId) {
+        return mapper.toDomain(client.findEstadoChequera(facultadId, tipoChequeraId, chequeraSerieId, alternativaId));
     }
 }

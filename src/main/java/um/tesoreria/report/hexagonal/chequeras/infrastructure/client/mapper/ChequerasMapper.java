@@ -407,6 +407,7 @@ public class ChequerasMapper {
                 dto.importe(),
                 dto.fechaVencimiento(),
                 dto.cbu(),
+                dto.tipoDebito(),
                 dto.fechaEnvio(),
                 dto.rechazado(),
                 dto.motivoRechazo());

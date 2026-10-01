@@ -32,13 +32,13 @@ class FeignChequeraRepositoryAdapterEstadoChequeraTest {
         ProductoEstadoDto producto = new ProductoEstadoDto(1, "Matrícula", "Matrícula", 2,
                 new BigDecimal("375000.00"), new BigDecimal("182000.00"), List.of(cuota));
         DebitoEstadoDto debito = new DebitoEstadoDto(5, new BigDecimal("364000.00"), LocalDate.of(2026, 7, 22),
-                "1234567890123456789012", LocalDateTime.of(2026, 7, 3, 0, 0), true, "0011000100");
+                "1234567890123456789012", "Débito Directo", LocalDateTime.of(2026, 7, 3, 0, 0), true, "0011000100");
         EstadoChequeraDto dto = new EstadoChequeraDto(1, "Facultad de Ingeniería", 2, "Matrícula y Arancel", 12345L,
                 new BigDecimal("12345678"), "MUÑOZ", "Ana Ejemplo", "Ciclo Completo", "Lectivo 2026 - 2027",
                 new BigDecimal("0.15"), "Rapipago", 1, true, List.of(producto), List.of(debito));
-        when(client.findEstadoChequera(1, 2, 12345L, 1, 2)).thenReturn(dto);
+        when(client.findEstadoChequera(1, 2, 12345L, 1)).thenReturn(dto);
 
-        EstadoChequera estado = adapter.findEstadoChequera(1, 2, 12345L, 1, 2);
+        EstadoChequera estado = adapter.findEstadoChequera(1, 2, 12345L, 1);
 
         assertThat(estado.facultadNombre()).isEqualTo("Facultad de Ingeniería");
         assertThat(estado.personaId()).isEqualByComparingTo("12345678");
@@ -56,6 +56,7 @@ class FeignChequeraRepositoryAdapterEstadoChequeraTest {
         assertThat(cuotaMapeada.ordenPago()).isZero();
         assertThat(estado.debitos()).hasSize(1);
         DebitoEstado debitoMapeado = estado.debitos().get(0);
+        assertThat(debitoMapeado.tipoDebito()).isEqualTo("Débito Directo");
         assertThat(debitoMapeado.rechazado()).isTrue();
         assertThat(debitoMapeado.motivoRechazo()).isEqualTo("0011000100");
         assertThat(debitoMapeado.fechaEnvio()).isEqualTo(LocalDateTime.of(2026, 7, 3, 0, 0));
@@ -65,9 +66,9 @@ class FeignChequeraRepositoryAdapterEstadoChequeraTest {
     void findEstadoChequera_treatsMissingListsAsEmpty() {
         EstadoChequeraDto dto = new EstadoChequeraDto(1, null, 2, null, 12345L, null, null, null, null, null, null,
                 null, 1, false, null, null);
-        when(client.findEstadoChequera(1, 2, 12345L, 1, 2)).thenReturn(dto);
+        when(client.findEstadoChequera(1, 2, 12345L, 1)).thenReturn(dto);
 
-        EstadoChequera estado = adapter.findEstadoChequera(1, 2, 12345L, 1, 2);
+        EstadoChequera estado = adapter.findEstadoChequera(1, 2, 12345L, 1);
 
         assertThat(estado.productos()).isEmpty();
         assertThat(estado.debitos()).isEmpty();

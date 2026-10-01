@@ -64,7 +64,9 @@ class OpenPdfEstadoChequeraPdfGeneratorTest {
                 .contains("Hoja: 2", "Estado de Chequera", "TITULAR", "(12345678) MUÑOZ, Ana Ejemplo",
                         "TIPO IMPRESION", "Rapipago", "HPUM", "Chequera: 1/2/12345")
                 .contains("Adhesión de chequera al Débito Automático")
-                .contains(EstadoChequeraFixture.CBU, "0011000100", "04/06/2026 00:00");
+                .contains(EstadoChequeraFixture.CBU, "0011000100", "04/06/2026 00:00")
+                // Débitos de dos tipos distintos, ambos visibles en la misma tabla.
+                .contains("Débito Directo", "Débito VISA");
     }
 
     @Test
@@ -89,7 +91,7 @@ class OpenPdfEstadoChequeraPdfGeneratorTest {
         PdfReader pdf = render(sinDatos);
 
         assertThat(pdf.getNumberOfPages()).isEqualTo(2);
-        assertThat(text(pdf, 1)).contains("PORCENTAJE DE BECA", "0%", "Hoja: 1", "NO HPUM");
+        assertThat(text(pdf, 1)).contains("PORCENTAJE DE BECA", "0%", "Hoja: 1").doesNotContain("HPUM");
         assertThat(text(pdf, 2)).contains("Hoja: 2", "Adhesión de chequera al Débito Automático");
     }
 

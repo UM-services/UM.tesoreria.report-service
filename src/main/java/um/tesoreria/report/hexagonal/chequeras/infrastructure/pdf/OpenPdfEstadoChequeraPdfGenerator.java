@@ -29,8 +29,11 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Dibuja el PDF "Estado de Chequera" con OpenPDF.
@@ -139,14 +142,17 @@ public class OpenPdfEstadoChequeraPdfGenerator implements EstadoChequeraPdfGener
         // Insignia HPUM (a la izquierda, bien visible) y código de chequera (a la derecha), en la misma fila
         PdfPTable pie = new PdfPTable(new float[]{1, 2});
         pie.setWidthPercentage(100);
-        PdfPCell insignia = new PdfPCell(new Phrase(estado.hpum() ? "HPUM" : "NO HPUM",
-                new Font(Font.HELVETICA, 8, Font.BOLD, estado.hpum() ? Color.WHITE : COLOR_ETIQUETA)));
-        insignia.setBackgroundColor(estado.hpum() ? COLOR_ACENTO : Color.WHITE);
-        insignia.setBorder(estado.hpum() ? Rectangle.NO_BORDER : Rectangle.BOX);
-        insignia.setBorderColor(COLOR_LINEA);
-        insignia.setHorizontalAlignment(Element.ALIGN_CENTER);
+        // Solo se dibuja la insignia cuando SÍ es HPUM; si no, la celda queda vacía y sin borde.
+        PdfPCell insignia = new PdfPCell();
+        insignia.setBorder(Rectangle.NO_BORDER);
         insignia.setVerticalAlignment(Element.ALIGN_MIDDLE);
         insignia.setPadding(5f);
+        if (estado.hpum()) {
+            Phrase hpum = new Phrase("HPUM", new Font(Font.HELVETICA, 8, Font.BOLD, Color.WHITE));
+            insignia.addElement(hpum);
+            insignia.setBackgroundColor(COLOR_ACENTO);
+            insignia.setHorizontalAlignment(Element.ALIGN_CENTER);
+        }
         pie.addCell(insignia);
 
         PdfPCell chequeraCell = new PdfPCell();
@@ -309,12 +315,38 @@ public class OpenPdfEstadoChequeraPdfGenerator implements EstadoChequeraPdfGener
 
     // ------------------------------------------------------------------ hoja 2: débito automático
 
+    private static final String SIN_TIPO_DEBITO = "Sin tipo";
+
     private void writeDebitos(Document document, List<DebitoEstado> debitos, DecimalFormat importes) {
         document.add(new Paragraph("Adhesión de chequera al Débito Automático",
                 new Font(Font.HELVETICA, 12, Font.BOLD, COLOR_ACENTO)));
-        document.add(new Paragraph(" "));
+        document.add(espacio(4));
 
-        PdfPTable table = new PdfPTable(new float[]{0.6f, 1.2f, 1.3f, 2.2f, 1.3f, 0.7f, 1.7f});
+        // La chequera puede tener débitos de más de un tipo a la vez (VISA + Directo): se separan
+        // en una tabla por tipo (no todos mezclados en una sola), en orden alfabético del nombre.
+        Map<String, List<DebitoEstado>> porTipo = new TreeMap<>();
+        for (DebitoEstado debito : debitos) {
+            String tipo = debito.tipoDebito() != null ? debito.tipoDebito() : SIN_TIPO_DEBITO;
+            porTipo.computeIfAbsent(tipo, k -> new ArrayList<>()).add(debito);
+        }
+
+        boolean primerGrupo = true;
+        for (Map.Entry<String, List<DebitoEstado>> grupo : porTipo.entrySet()) {
+            if (!primerGrupo) {
+                document.add(espacio(8));
+            }
+            primerGrupo = false;
+            writeTablaDebitos(document, grupo.getKey(), grupo.getValue(), importes);
+        }
+    }
+
+    private void writeTablaDebitos(Document document, String tipoDebito, List<DebitoEstado> debitos,
+                                   DecimalFormat importes) {
+        Paragraph titulo = new Paragraph(tipoDebito, new Font(Font.HELVETICA, 10, Font.BOLD, COLOR_ACENTO));
+        document.add(titulo);
+        document.add(espacio(3));
+
+        PdfPTable table = new PdfPTable(new float[]{0.5f, 1.1f, 1.1f, 2.6f, 1.7f, 0.6f, 1.5f});
         table.setWidthPercentage(100);
 
         String[] headers = {"Cuo", "Importe", "Fecha Vto", "CBU", "Envío al Banco", "Rech", "Motivo de Rechazo"};

@@ -16,10 +16,9 @@ public interface ChequeraClient {
                                                             @PathVariable Long chequeraSerieId,
                                                             @PathVariable Integer alternativaId);
 
-    @GetMapping("/estado/{facultadId}/{tipoChequeraId}/{chequeraSerieId}/{alternativaId}/{debitoTipoId}")
+    @GetMapping("/estado/{facultadId}/{tipoChequeraId}/{chequeraSerieId}/{alternativaId}")
     EstadoChequeraDto findEstadoChequera(@PathVariable Integer facultadId,
                                          @PathVariable Integer tipoChequeraId,
                                          @PathVariable Long chequeraSerieId,
-                                         @PathVariable Integer alternativaId,
-                                         @PathVariable Integer debitoTipoId);
+                                         @PathVariable Integer alternativaId);
 }
