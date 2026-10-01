@@ -29,8 +29,8 @@ public class ChequerasReportService {
     }
 
     public String generateEstadoChequera(Integer facultadId, Integer tipoChequeraId, Long chequeraSerieId,
-                                         Integer alternativaId, Integer debitoTipoId) {
+                                         Integer alternativaId) {
         return generateEstadoChequeraUseCase.generateEstadoChequera(facultadId, tipoChequeraId, chequeraSerieId,
-                alternativaId, debitoTipoId);
+                alternativaId);
     }
 }
