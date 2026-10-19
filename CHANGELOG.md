@@ -5,6 +5,25 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2026-10-19
+
+### Added
+- **feat:** El PDF "Estado de Chequera" muestra todos los tipos de débito automático de la chequera
+  - Nuevo campo `tipoDebito` en `DebitoEstado` y `DebitoEstadoDto`, mapeado en `ChequerasMapper`
+  - `OpenPdfEstadoChequeraPdfGenerator` agrupa los débitos en una tabla por tipo (orden alfabético con `TreeMap`), con un título por grupo y el valor `Sin tipo` cuando el dato no viene informado
+  - `EstadoChequeraFixture` mezcla "Débito Directo" y "Débito VISA" para cubrir ambos tipos
+  - Nueva prueba `GenerateEstadoChequeraUseCaseImplTest`: valida el nombre del archivo, que el PDF tenga dos hojas y que se elimine el archivo parcial cuando falla el generador
+
+### Changed
+- **refactor:** Se quitó el path variable `debitoTipoId` del endpoint de estado de chequera: `GET /api/tesoreria/report/chequeras/estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}`. El cliente Feign ahora consume `GET /api/tesoreria/core/chequera/estado/{facultadId}/{tipoChequeraId}/{chequeraSerieId}/{alternativaId}` (cambio incompatible con la firma anterior)
+- **refactor:** El nombre del archivo generado pasa a `estado-chequera.{facultadId}.{tipoChequeraId}.{chequeraSerieId}.{alternativaId}.pdf`
+- **ci:** `deploy-staging.yml` despliega en paralelo a los entornos `staging` y `staging-new` mediante una matriz con `fail-fast: false`
+- **docs:** Diagrama `generacion-reporte.mmd` actualizado con el endpoint sin `debitoTipoId`
+- **chore:** Actualización de versión a `0.13.0`
+
+### Fixed
+- **fix:** La insignia "HPUM" solo se dibuja cuando la chequera es HPUM; se eliminó el recuadro "NO HPUM"
+
 ## [0.12.0] - 2026-09-30
 
 ### Added
