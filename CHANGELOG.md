@@ -5,6 +5,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.2] - 2026-10-22
+
+### Removed
+- Dependencia `spring-boot-starter-mail` y configuración `spring.mail`/`app.mail`: el servicio nunca envió correos (no tenía ningún `JavaMailSender`). El envío queda centralizado en `tesoreria-sender`.
+- Variables `APP_MAIL_USERNAME`/`APP_MAIL_PASSWORD` del compose de tesorería.
+- Configuración `management.health.mail.enabled: false` de `bootstrap.yml`, que ya no aplica al no existir el starter de correo.
+
+### Changed
+- **chore:** Actualización de versión a `0.13.2`.
+
+### Fixed
+- **fix:** `TipoChequeraDto` ahora anota con `@Builder.Default` los campos con valor inicial (`nombre`, `prefijo`, `geograficaId`, `claseChequeraId`, `imprimir`, `contado`, `multiple`), de modo que `TipoChequeraDto.builder()` respeta esos valores por defecto en lugar de asignar `null`/`0`.
+
 ## [0.13.1] - 2026-10-22
 
 ### Changed
