@@ -2,9 +2,9 @@
 # UM.tesoreria.report-service
 
 [![Java](https://img.shields.io/badge/Java-25-blue)](https://www.java.com/)
-[![Version](https://img.shields.io/badge/Version-0.13.0-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-brightgreen)](https://spring.io/projects/spring-boot)
-[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.1.2-brightgreen)](https://spring.io/projects/spring-cloud)
+[![Version](https://img.shields.io/badge/Version-0.13.1-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.1-brightgreen)](https://spring.io/projects/spring-boot)
+[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.1.3-brightgreen)](https://spring.io/projects/spring-cloud)
 [![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-3.0.3-blue)](https://springdoc.org/)
 [![Apache POI](https://img.shields.io/badge/Apache%20POI-5.5.1-red)](https://poi.apache.org/)
 [![OpenPDF](https://img.shields.io/badge/OpenPDF-3.0.5-red)](https://github.com/LibrePDF/OpenPDF)
@@ -36,8 +36,8 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 ## Tecnologías
 
 - Java 25
-- Spring Boot 4.1.0
-- Spring Cloud 2025.1.2
+- Spring Boot 4.1.1
+- Spring Cloud 2025.1.3
 - Caffeine (para caché)
 - SpringDoc OpenAPI 3.0.3
 - Apache POI 5.5.1 (para reportes Excel)
