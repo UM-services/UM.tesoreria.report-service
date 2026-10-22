@@ -10,7 +10,7 @@
     </parent>
     <groupId>ar.edu</groupId>
     <artifactId>um.tesoreria.report</artifactId>
-    <version>0.13.1</version>
+    <version>0.13.2</version>
     <name>UM.tesoreria.report-service</name>
     <description>Spring Boot Report Service</description>
     <properties>
@@ -38,10 +38,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
