@@ -5,6 +5,14 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.1] - 2026-10-22
+
+### Changed
+- **chore:** Actualización de Spring Boot de 4.1.0 a 4.1.1
+- **chore:** Actualización de Spring Cloud de 2025.1.2 a 2025.1.3 (`spring-cloud.version`)
+- **chore:** El registro en Consul ahora usa `health-check-path: /actuator/health/readiness` con `health-check-critical-timeout: 5m`, de modo que un servicio en estado crítico se poda del catálogo tras cinco minutos
+- **chore:** Actualización de versión a `0.13.1`
+
 ## [0.13.0] - 2026-10-19
 
 ### Added
