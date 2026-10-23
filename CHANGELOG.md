@@ -5,6 +5,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.3] - 2026-10-23
+
+### Changed
+- **chore:** Actualización de Spring Boot de 4.1.1 a 4.1.2 (`spring-boot-starter-parent`)
+- **chore:** Actualización de Spring Cloud de 2025.1.3 a 2025.1.4 (`spring-cloud.version`)
+- **chore:** Actualización de SpringDoc OpenAPI de 3.0.3 a 3.1.1 (`springdoc-openapi-starter-webmvc-ui`)
+- **chore:** Actualización de Apache POI de 5.5.1 a 6.0.0 (`poi` y `poi-ooxml`); los generadores Excel siguen usando la API `Workbook`/`XSSFWorkbook`, `Sheet`, `Row`, `Cell` y `CellStyle`
+- **chore:** Actualización de ModelMapper de 3.2.6 a 3.2.8
+- **chore:** Actualización de `commons-lang3` de 3.20.0 a 3.21.0 (`dependencyManagement`)
+- **chore:** Actualización de JaCoCo de 0.8.13 a 0.8.15 (`jacoco-maven-plugin`)
+- **chore:** El descubrimiento en Consul usa `query-passing: true`, de modo que Feign/LoadBalancer solo resuelve instancias con los checks en `passing`
+- **chore:** Actualización de versión a `0.13.3`.
+
 ## [0.13.2] - 2026-10-22
 
 ### Removed
