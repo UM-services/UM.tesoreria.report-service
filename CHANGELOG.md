@@ -5,6 +5,17 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2026-10-29
+
+### Added
+- **feat:** Nuevo endpoint `GET /api/tesoreria/report/recibos/facultad/{facultadId}/lectivo/{lectivoId}/persona/{personaId}/documento/{documentoId}` que lista los recibos de pago emitidos (con CAE) de una persona en una facultad y un lectivo, del más reciente al más antiguo. Cada recibo incluye `anho`, `mes`, `productoId` y `producto` (nombre, por ejemplo arancel o matrícula; salen del pago de la chequera en el core) y `pdfUrl` (`/api/tesoreria/sender/recibo/pdf/{facturacionElectronicaId}`), que se descarga desde `tesoreria-sender-service`.
+- Nuevo slice `hexagonal/recibos` con caso de uso `ListRecibosUseCase`, puerto `RecibosRepository`, adaptador Feign y cliente `FacturacionElectronicaClient` hacia el core.
+- `ChequeraPagoClient.findAllByChequera` (`chequeraPago/chequera/...` del core).
+- `ChequeraSerieClient.findAllByPersonaLectivo` (`chequeraSerie/personaLectivo/...` del core).
+- Tests del caso de uso (filtro por facultad, unión de chequeras, orden, recibos sin CAE, vacío y propagación de errores del core).
+### Changed
+- **chore:** Actualización de versión a `0.14.0`.
+
 ## [0.13.3] - 2026-10-23
 
 ### Changed
