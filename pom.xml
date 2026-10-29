@@ -5,17 +5,17 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.1</version>
+        <version>4.1.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ar.edu</groupId>
     <artifactId>um.tesoreria.report</artifactId>
-    <version>0.13.2</version>
+    <version>0.13.3</version>
     <name>UM.tesoreria.report-service</name>
     <description>Spring Boot Report Service</description>
     <properties>
         <java.version>25</java.version>
-        <spring-cloud.version>2025.1.3</spring-cloud.version>
+        <spring-cloud.version>2025.1.4</spring-cloud.version>
         <sonar.organization>um-services</sonar.organization>
         <sonar.projectKey>UM-services_UM.tesoreria.report-service</sonar.projectKey>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.0.3</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -85,17 +85,17 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>5.5.1</version>
+            <version>6.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.5.1</version>
+            <version>6.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
-            <version>3.2.6</version>
+            <version>3.2.8</version>
         </dependency>
     </dependencies>
 
@@ -104,7 +104,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.20.0</version>
+                <version>3.21.0</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -169,7 +169,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.13</version>
+                <version>0.8.15</version>
                 <executions>
                     <execution>
                         <goals>
