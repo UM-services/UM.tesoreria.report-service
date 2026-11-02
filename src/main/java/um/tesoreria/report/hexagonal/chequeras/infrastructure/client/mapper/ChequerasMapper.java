@@ -1,5 +1,13 @@
 package um.tesoreria.report.hexagonal.chequeras.infrastructure.client.mapper;
 
+import um.tesoreria.report.hexagonal.chequeras.domain.model.MateriasEstado;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.EstadoMaterias;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.PeriodoCursada;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.CursoMaterias;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.PeriodoMaterias;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.MateriaInscripta;
+import um.tesoreria.report.hexagonal.chequeras.infrastructure.client.dto.MateriasEstadoDto;
+
 import org.springframework.stereotype.Component;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.*;
 import um.tesoreria.report.hexagonal.chequeras.infrastructure.client.dto.*;
@@ -411,5 +419,18 @@ public class ChequerasMapper {
                 dto.fechaEnvio(),
                 dto.rechazado(),
                 dto.motivoRechazo());
+    }
+
+    public List<MateriasEstado> toMaterias(List<MateriasEstadoDto> materias) {
+        if (materias == null) return List.of();
+        return materias.stream().map(dto -> new MateriasEstado(dto.fuente(), EstadoMaterias.desde(dto.estado()),
+                dto.cursoInscripcion(), dto.plan(), dto.carrera(), dto.observaciones(),
+                dto.cursos() == null ? List.of() : dto.cursos().stream().map(curso ->
+                        new CursoMaterias(curso.curso(), curso.periodos() == null ? List.of() :
+                                curso.periodos().stream().map(periodo -> new PeriodoMaterias(
+                                        PeriodoCursada.desde(periodo.periodo()), periodo.materias() == null ? List.of() :
+                                        periodo.materias().stream().map(materia -> new MateriaInscripta(
+                                                materia.materiaId(), materia.nombre())).toList())).toList())).toList()))
+                .toList();
     }
 }

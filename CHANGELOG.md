@@ -5,6 +5,16 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2026-11-02
+
+### Added
+- PDF independiente “Materias inscriptas” en `GET /api/tesoreria/report/chequeras/materias/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}`. Usa el encabezado del estado de chequera y la lista del endpoint separado `materiasInscriptas` del core.
+- Un bloque por fuente recibida, con leyendas para fuentes no disponibles o sin inscripción. Tablas por curso y período, con columnas repetidas al continuar en otra página.
+- Compatibilidad con fuentes, estados y períodos desconocidos. Pruebas con la fixture pública de 13 materias y prueba HTTP con core simulado, separada del E2E.
+
+### Changed
+- Versión `0.15.0`: funcionalidad aditiva posterior a `0.14.0`, ya registrada en este changelog. Se sincronizan Maven y README, que aún indicaban `0.13.3`.
+
 ## [0.14.0] - 2026-10-29
 
 ### Added
