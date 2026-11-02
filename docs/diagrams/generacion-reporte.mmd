@@ -62,17 +62,17 @@ sequenceDiagram
     ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
     ChequerasReportController-->>-User: ResponseEntity<Resource>
 
-    User->>+ChequerasReportController: GET /estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}/debitoTipo/{debitoTipoId}
+    User->>+ChequerasReportController: GET /estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}
     ChequerasReportController->>+ChequerasReportService: generateEstadoChequera()
     ChequerasReportService->>+GenerateEstadoChequeraUseCase: generateEstadoChequera()
     GenerateEstadoChequeraUseCase->>+Adapters: findEstadoChequera()
     Adapters->>+ChequeraClient: findEstadoChequera()
-    ChequeraClient->>+CoreService: GET /api/tesoreria/core/chequera/estado/{facultadId}/{tipoChequeraId}/{chequeraSerieId}/{alternativaId}/{debitoTipoId}
+    ChequeraClient->>+CoreService: GET /api/tesoreria/core/chequera/estado/{facultadId}/{tipoChequeraId}/{chequeraSerieId}/{alternativaId}
     CoreService-->>-ChequeraClient: EstadoChequeraDto
     ChequeraClient-->>-Adapters: EstadoChequeraDto
     Adapters-->>-GenerateEstadoChequeraUseCase: EstadoChequera
     GenerateEstadoChequeraUseCase->>+OpenPdfEstadoChequeraPdfGenerator: generate(estado, out)
-    Note over OpenPdfEstadoChequeraPdfGenerator: Hoja 1: cuotas por producto con subtotales<br/>Hoja 2: adhesión al débito automático<br/>Logos UM/ETEC desde el classpath
+    Note over OpenPdfEstadoChequeraPdfGenerator: Hoja 1: cuotas por producto con subtotales<br/>Hoja 2: débitos automáticos agrupados por tipo<br/>Logos UM/ETEC desde el classpath
     OpenPdfEstadoChequeraPdfGenerator-->>-GenerateEstadoChequeraUseCase: PDF escrito
     GenerateEstadoChequeraUseCase-->>-ChequerasReportService: filename
     ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>

@@ -2,11 +2,11 @@
 # UM.tesoreria.report-service
 
 [![Java](https://img.shields.io/badge/Java-25-blue)](https://www.java.com/)
-[![Version](https://img.shields.io/badge/Version-0.12.0-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-brightgreen)](https://spring.io/projects/spring-boot)
-[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.1.2-brightgreen)](https://spring.io/projects/spring-cloud)
-[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-3.0.3-blue)](https://springdoc.org/)
-[![Apache POI](https://img.shields.io/badge/Apache%20POI-5.5.1-red)](https://poi.apache.org/)
+[![Version](https://img.shields.io/badge/Version-0.13.3-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.2-brightgreen)](https://spring.io/projects/spring-boot)
+[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.1.4-brightgreen)](https://spring.io/projects/spring-cloud)
+[![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-3.1.1-blue)](https://springdoc.org/)
+[![Apache POI](https://img.shields.io/badge/Apache%20POI-6.0.0-red)](https://poi.apache.org/)
 [![OpenPDF](https://img.shields.io/badge/OpenPDF-3.0.5-red)](https://github.com/LibrePDF/OpenPDF)
 [![Lombok](https://img.shields.io/badge/Lombok-1.18.30-pink)](https://projectlombok.org/)
 
@@ -23,7 +23,7 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 - Generación de planillas de detalle por sede (geográfica): horizontal y vertical
 - Planillas de pagos con información de contacto (emails institucional y personal)
 - Generación de planilla de "Lectivo Total Imputación" desde el módulo contable
-- Generación de PDF "Estado de Chequera" (dos hojas: cuotas por producto con subtotales y débito automático)
+- Generación de PDF "Estado de Chequera" (dos hojas: cuotas por producto con subtotales y débitos automáticos agrupados por tipo)
 - Integración con servicios core de Tesorería (Chequera, Legajo, Lectivo, Geográfica, Contable)
 - Endpoints REST para descarga de reportes
 - Configuración avanzada con Spring Cloud y Consul
@@ -36,11 +36,11 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 ## Tecnologías
 
 - Java 25
-- Spring Boot 4.1.0
-- Spring Cloud 2025.1.2
+- Spring Boot 4.1.2
+- Spring Cloud 2025.1.4
 - Caffeine (para caché)
-- SpringDoc OpenAPI 3.0.3
-- Apache POI 5.5.1 (para reportes Excel)
+- SpringDoc OpenAPI 3.1.1
+- Apache POI 6.0.0 (para reportes Excel)
 - OpenPDF 3.0.5 (para reportes PDF)
 - Lombok (para reducir código boilerplate)
 

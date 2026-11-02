@@ -14,4 +14,9 @@ public interface ChequeraPagoClient {
                                                                            @PathVariable Integer tipoChequeraId,
                                                                            @PathVariable Integer lectivoId);
 
+    @GetMapping("/chequera/{facultadId}/{tipoChequeraId}/{chequeraSerieId}")
+    List<ChequeraPagoDto> findAllByChequera(@PathVariable Integer facultadId,
+                                            @PathVariable Integer tipoChequeraId,
+                                            @PathVariable Long chequeraSerieId);
+
 }

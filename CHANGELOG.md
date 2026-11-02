@@ -5,6 +5,70 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2026-10-29
+
+### Added
+- **feat:** Nuevo endpoint `GET /api/tesoreria/report/recibos/facultad/{facultadId}/lectivo/{lectivoId}/persona/{personaId}/documento/{documentoId}` que lista los recibos de pago emitidos (con CAE) de una persona en una facultad y un lectivo, del más reciente al más antiguo. Cada recibo incluye `anho`, `mes`, `productoId` y `producto` (nombre, por ejemplo arancel o matrícula; salen del pago de la chequera en el core) y `pdfUrl` (`/api/tesoreria/sender/recibo/pdf/{facturacionElectronicaId}`), que se descarga desde `tesoreria-sender-service`.
+- Nuevo slice `hexagonal/recibos` con caso de uso `ListRecibosUseCase`, puerto `RecibosRepository`, adaptador Feign y cliente `FacturacionElectronicaClient` hacia el core.
+- `ChequeraPagoClient.findAllByChequera` (`chequeraPago/chequera/...` del core).
+- `ChequeraSerieClient.findAllByPersonaLectivo` (`chequeraSerie/personaLectivo/...` del core).
+- Tests del caso de uso (filtro por facultad, unión de chequeras, orden, recibos sin CAE, vacío y propagación de errores del core).
+### Changed
+- **chore:** Actualización de versión a `0.14.0`.
+
+## [0.13.3] - 2026-10-23
+
+### Changed
+- **chore:** Actualización de Spring Boot de 4.1.1 a 4.1.2 (`spring-boot-starter-parent`)
+- **chore:** Actualización de Spring Cloud de 2025.1.3 a 2025.1.4 (`spring-cloud.version`)
+- **chore:** Actualización de SpringDoc OpenAPI de 3.0.3 a 3.1.1 (`springdoc-openapi-starter-webmvc-ui`)
+- **chore:** Actualización de Apache POI de 5.5.1 a 6.0.0 (`poi` y `poi-ooxml`); los generadores Excel siguen usando la API `Workbook`/`XSSFWorkbook`, `Sheet`, `Row`, `Cell` y `CellStyle`
+- **chore:** Actualización de ModelMapper de 3.2.6 a 3.2.8
+- **chore:** Actualización de `commons-lang3` de 3.20.0 a 3.21.0 (`dependencyManagement`)
+- **chore:** Actualización de JaCoCo de 0.8.13 a 0.8.15 (`jacoco-maven-plugin`)
+- **chore:** El descubrimiento en Consul usa `query-passing: true`, de modo que Feign/LoadBalancer solo resuelve instancias con los checks en `passing`
+- **chore:** Actualización de versión a `0.13.3`.
+
+## [0.13.2] - 2026-10-22
+
+### Removed
+- Dependencia `spring-boot-starter-mail` y configuración `spring.mail`/`app.mail`: el servicio nunca envió correos (no tenía ningún `JavaMailSender`). El envío queda centralizado en `tesoreria-sender`.
+- Variables `APP_MAIL_USERNAME`/`APP_MAIL_PASSWORD` del compose de tesorería.
+- Configuración `management.health.mail.enabled: false` de `bootstrap.yml`, que ya no aplica al no existir el starter de correo.
+
+### Changed
+- **chore:** Actualización de versión a `0.13.2`.
+
+### Fixed
+- **fix:** `TipoChequeraDto` ahora anota con `@Builder.Default` los campos con valor inicial (`nombre`, `prefijo`, `geograficaId`, `claseChequeraId`, `imprimir`, `contado`, `multiple`), de modo que `TipoChequeraDto.builder()` respeta esos valores por defecto en lugar de asignar `null`/`0`.
+
+## [0.13.1] - 2026-10-22
+
+### Changed
+- **chore:** Actualización de Spring Boot de 4.1.0 a 4.1.1
+- **chore:** Actualización de Spring Cloud de 2025.1.2 a 2025.1.3 (`spring-cloud.version`)
+- **chore:** El registro en Consul ahora usa `health-check-path: /actuator/health/readiness` con `health-check-critical-timeout: 5m`, de modo que un servicio en estado crítico se poda del catálogo tras cinco minutos
+- **chore:** Actualización de versión a `0.13.1`
+
+## [0.13.0] - 2026-10-19
+
+### Added
+- **feat:** El PDF "Estado de Chequera" muestra todos los tipos de débito automático de la chequera
+  - Nuevo campo `tipoDebito` en `DebitoEstado` y `DebitoEstadoDto`, mapeado en `ChequerasMapper`
+  - `OpenPdfEstadoChequeraPdfGenerator` agrupa los débitos en una tabla por tipo (orden alfabético con `TreeMap`), con un título por grupo y el valor `Sin tipo` cuando el dato no viene informado
+  - `EstadoChequeraFixture` mezcla "Débito Directo" y "Débito VISA" para cubrir ambos tipos
+  - Nueva prueba `GenerateEstadoChequeraUseCaseImplTest`: valida el nombre del archivo, que el PDF tenga dos hojas y que se elimine el archivo parcial cuando falla el generador
+
+### Changed
+- **refactor:** Se quitó el path variable `debitoTipoId` del endpoint de estado de chequera: `GET /api/tesoreria/report/chequeras/estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}`. El cliente Feign ahora consume `GET /api/tesoreria/core/chequera/estado/{facultadId}/{tipoChequeraId}/{chequeraSerieId}/{alternativaId}` (cambio incompatible con la firma anterior)
+- **refactor:** El nombre del archivo generado pasa a `estado-chequera.{facultadId}.{tipoChequeraId}.{chequeraSerieId}.{alternativaId}.pdf`
+- **ci:** `deploy-staging.yml` despliega en paralelo a los entornos `staging` y `staging-new` mediante una matriz con `fail-fast: false`
+- **docs:** Diagrama `generacion-reporte.mmd` actualizado con el endpoint sin `debitoTipoId`
+- **chore:** Actualización de versión a `0.13.0`
+
+### Fixed
+- **fix:** La insignia "HPUM" solo se dibuja cuando la chequera es HPUM; se eliminó el recuadro "NO HPUM"
+
 ## [0.12.0] - 2026-09-30
 
 ### Added

@@ -4,6 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import um.tesoreria.report.hexagonal.chequeras.infrastructure.client.dto.ChequeraSerieDto;
+import java.math.BigDecimal;
 import java.util.List;
 
 @FeignClient(name = "tesoreria-core-service", contextId = "chequeraSerieClient", path = "/api/tesoreria/core/chequeraSerie")
@@ -19,5 +20,10 @@ public interface ChequeraSerieClient {
     List<ChequeraSerieDto> findAllBySede(@PathVariable Integer facultadId,
                                          @PathVariable Integer lectivoId,
                                          @PathVariable Integer geograficaId);
+
+    @GetMapping("/personaLectivo/{personaId}/{documentoId}/{lectivoId}")
+    List<ChequeraSerieDto> findAllByPersonaLectivo(@PathVariable BigDecimal personaId,
+                                                   @PathVariable Integer documentoId,
+                                                   @PathVariable Integer lectivoId);
 
 }
