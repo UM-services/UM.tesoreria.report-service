@@ -19,6 +19,9 @@ graph TD
         G --> J
         H --> J
         I --> J
+        G4["MateriasInscriptasClient"]
+        N3["OpenPdfMateriasInscriptasPdfGenerator"]
+        G4 --> J
         G3 --> J
         J --> K
     end
@@ -43,12 +46,14 @@ graph TD
         L --> M
         L --> N
         L --> R
+        T2["GenerateMateriasInscriptasUseCase"]
+        L --> T2
         L --> T
         L2 --> S
     end
 
     subgraph "Hexagonal: Domain Layer"
-        O["Domain Model Chequeras (22 entities)"]
+        O["Domain Model Chequeras"]
         O2["Domain Model Contable (2 entities)"]
         P["Port In: UseCase Interfaces"]
         Q["Port Out: Repository and PDF Generator Interfaces"]
@@ -65,6 +70,8 @@ graph TD
     S -.-> P
     Q -.-> J
     Q -.-> J2
+    T2 -.-> P
+    Q -.-> N3
     Q -.-> N2
     J --> B
     J --> C

@@ -1,6 +1,7 @@
 package um.tesoreria.report.hexagonal.chequeras.application.service;
 
 import lombok.RequiredArgsConstructor;
+import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GenerateMateriasInscriptasUseCase;
 import org.springframework.stereotype.Service;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GenerateEstadoChequeraUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaDetalleUseCase;
@@ -14,6 +15,7 @@ public class ChequerasReportService {
     private final GeneratePlanillaDetalleUseCase generatePlanillaDetalleUseCase;
     private final GeneratePlanillaDetalleVerticalUseCase generatePlanillaDetalleVerticalUseCase;
     private final GeneratePlanillaPagosUseCase generatePlanillaPagosUseCase;
+    private final GenerateMateriasInscriptasUseCase generateMateriasInscriptasUseCase;
     private final GenerateEstadoChequeraUseCase generateEstadoChequeraUseCase;
 
     public String generatePlanillaDetalle(Integer facultadId, Integer lectivoId, Integer geograficaId) {
@@ -32,5 +34,11 @@ public class ChequerasReportService {
                                          Integer alternativaId) {
         return generateEstadoChequeraUseCase.generateEstadoChequera(facultadId, tipoChequeraId, chequeraSerieId,
                 alternativaId);
+    }
+
+    public String generateMateriasInscriptas(Integer facultadId, Integer tipoChequeraId, Long chequeraSerieId,
+                                            Integer alternativaId) {
+        return generateMateriasInscriptasUseCase.generateMateriasInscriptas(facultadId, tipoChequeraId,
+                chequeraSerieId, alternativaId);
     }
 }

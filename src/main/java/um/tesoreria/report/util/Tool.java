@@ -9,6 +9,10 @@ import org.springframework.http.ResponseEntity;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Tool {
 
@@ -24,4 +28,20 @@ public class Tool {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
     }
 
+
+    /** Solo para reportes con un archivo propio por solicitud. Spring cierra el stream al descargar. */
+    public static ResponseEntity<Resource> generateTemporaryFile(String filename, String headerFilename) throws IOException {
+        ResponseEntity<Resource> response = generateFile(filename, headerFilename);
+        Resource resource = new InputStreamResource(new FilterInputStream(response.getBody().getInputStream()) {
+            @Override
+            public void close() throws IOException {
+                try {
+                    super.close();
+                } finally {
+                    Files.deleteIfExists(Path.of(filename));
+                }
+            }
+        });
+        return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders()).body(resource);
+    }
 }

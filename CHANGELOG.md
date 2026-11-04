@@ -5,6 +5,24 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2026-11-03
+
+### Added
+- **feat:** Nuevo endpoint `GET /api/tesoreria/report/contable/plan-cuentas/excel` que devuelve un `.xlsx` (`plan-de-cuentas.xlsx`) con todo el plan de cuentas del core ordenado por número: número de cuenta (como texto, para que Excel no lo pase a notación científica), nombre, sede, grado, integradora y visible. La primera fila queda fija y con filtro, para filtrar por sede o grado en Excel.
+- Nuevos `GeneratePlanCuentasExcelUseCase`, puerto `PlanCuentasRepository`, clientes Feign `CuentaClient` y `SedeClient` (`GET /cuenta/` y `GET /geografica/` del core, este último para resolver el nombre de la sede) y adaptador, todo en el slice `hexagonal/contable`.
+- Tests de `GeneratePlanCuentasExcelUseCaseImpl` (columnas, orden, sede, Sí/No, fila fija con filtro) y de `FeignPlanCuentasRepositoryAdapter`.
+> El Excel no calcula ni valida nada del plan: presenta lo que informa el core. Trae siempre el plan completo; no recibe filtros.
+
+## [0.15.0] - 2026-11-02
+
+### Added
+- PDF independiente “Materias inscriptas” en `GET /api/tesoreria/report/chequeras/materias/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}`. Usa el encabezado del estado de chequera y la lista del endpoint separado `materiasInscriptas` del core.
+- Un bloque por fuente recibida, con leyendas para fuentes no disponibles o sin inscripción. Tablas por curso y período, con columnas repetidas al continuar en otra página.
+- Compatibilidad con fuentes, estados y períodos desconocidos. Pruebas con la fixture pública de 13 materias y prueba HTTP con core simulado, separada del E2E.
+
+### Changed
+- Versión `0.15.0`: funcionalidad aditiva posterior a `0.14.0`, ya registrada en este changelog. Se sincronizan Maven y README, que aún indicaban `0.13.3`.
+
 ## [0.14.0] - 2026-10-29
 
 ### Added

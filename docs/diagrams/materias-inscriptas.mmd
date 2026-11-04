@@ -1,0 +1,20 @@
+sequenceDiagram
+    actor Usuario
+    participant Web as ChequerasReportController
+    participant UC as GenerateMateriasInscriptasUseCase
+    participant Estado as ChequeraRepository
+    participant Materias as MateriasInscriptasRepository
+    participant Core as Core Service
+    participant PDF as MateriasInscriptasPdfGenerator
+    Usuario->>Web: GET chequeras/materias/.../alternativa/...
+    Web->>UC: generateMateriasInscriptas
+    UC->>Estado: findEstadoChequera (incluye alternativa)
+    Estado->>Core: GET chequera/estado/...
+    Core-->>UC: Datos del encabezado
+    UC->>Materias: findMaterias (sin alternativa)
+    Materias->>Core: GET materiasInscriptas/{facultad}/{tipo}/{serie}
+    Core-->>UC: Lista de bloques por fuente
+    UC->>PDF: Encabezado + bloques, en el orden recibido
+    PDF-->>UC: Archivo PDF independiente
+    UC-->>Web: Ruta del archivo
+    Web-->>Usuario: materias-inscriptas.pdf
