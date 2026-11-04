@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import um.tesoreria.report.hexagonal.chequeras.application.service.ChequerasReportService;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static um.tesoreria.report.util.Tool.generateFile;
+import static um.tesoreria.report.util.Tool.generateTemporaryFile;
 
 @RestController
 @RequestMapping("/api/tesoreria/report/chequeras")
@@ -56,4 +58,13 @@ public class ChequerasReportController {
                 "estado-chequera.pdf");
     }
 
+
+    @GetMapping("/materias/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}")
+    public ResponseEntity<Resource> generateMateriasInscriptas(@PathVariable Integer facultadId,
+                                                              @PathVariable Integer tipoChequeraId,
+                                                              @PathVariable Long chequeraSerieId,
+                                                              @PathVariable Integer alternativaId) throws IOException {
+        return generateTemporaryFile(service.generateMateriasInscriptas(facultadId, tipoChequeraId, chequeraSerieId, alternativaId),
+                "materias-inscriptas.pdf");
+    }
 }
