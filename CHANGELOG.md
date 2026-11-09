@@ -5,6 +5,19 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0] - 2026-11-09
+
+### Added
+- **feat:** Nuevo endpoint `POST /api/tesoreria/report/chequeras/planilla/detalle/zip` que genera un ZIP (`detalle-cuotas-{lectivoId}-{formato}.zip`, `application/zip`) con una planilla de detalle `.xlsx` por cada facultad y sede solicitadas. Cada entrada se llama `detalle-cuotas-{facultadId}-{lectivoId}-{geograficaId}.xlsx` y se arma con el generador existente según el formato pedido: `HORIZONTAL` (`GeneratePlanillaDetalleUseCase`) o `VERTICAL` (`GeneratePlanillaDetalleVerticalUseCase`).
+- Nuevo body `PlanillaDetalleZipRequest` (`lectivoId`, `formato` y `destinos` con `facultadId`/`geograficaId`): exige al menos un destino, admite como máximo 50 y deduplica los destinos repetidos. Una selección inválida o incompleta responde `400 Bad Request` sin generar archivos.
+- Nuevos `GeneratePlanillaDetalleZipUseCase`, `DestinoPlanilla` y `FormatoPlanilla` en el slice hexagonal de chequeras, y el método correspondiente en `ChequerasReportService`.
+- `Tool.generateFile` y `Tool.generateTemporaryFile` ahora aceptan un `MediaType` explícito (con sobrecargas que conservan `application/octet-stream` por defecto), de modo que el ZIP se descarga con su content type correcto.
+- Se eliminan los XLSX temporales después de copiarlos al ZIP y el ZIP temporal se borra al cerrarse el stream de descarga o si la generación falla.
+- Tests `GeneratePlanillaDetalleZipUseCaseImplTest` (formato, deduplicación, límite de 50, limpieza de temporales) y `ChequerasReportControllerZipTest` (ruta, body, nombre de descarga, content type y `400` por validación).
+
+### Changed
+- **chore:** Actualización de versión a `0.16.0`.
+
 ## [0.15.0] - 2026-11-03
 
 ### Added

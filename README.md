@@ -2,13 +2,18 @@
 # UM.tesoreria.report-service
 
 [![Java](https://img.shields.io/badge/Java-25-blue)](https://www.java.com/)
-[![Version](https://img.shields.io/badge/Version-0.15.0-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
+[![Version](https://img.shields.io/badge/Version-0.16.0-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.2-brightgreen)](https://spring.io/projects/spring-boot)
 [![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.1.4-brightgreen)](https://spring.io/projects/spring-cloud)
 [![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-3.1.1-blue)](https://springdoc.org/)
 [![Apache POI](https://img.shields.io/badge/Apache%20POI-6.0.0-red)](https://poi.apache.org/)
 [![OpenPDF](https://img.shields.io/badge/OpenPDF-3.0.5-red)](https://github.com/LibrePDF/OpenPDF)
-[![Lombok](https://img.shields.io/badge/Lombok-1.18.30-pink)](https://projectlombok.org/)
+[![Lombok](https://img.shields.io/badge/Lombok-1.18.48-pink)](https://projectlombok.org/)
+[![Maven](https://img.shields.io/badge/Maven-3-orange)](https://maven.apache.org/)
+[![Consul](https://img.shields.io/badge/Consul-service%20discovery-orange)](https://developer.hashicorp.com/consul)
+[![JUnit](https://img.shields.io/badge/JUnit-6.0.3-green)](https://junit.org/)
+[![Docker](https://img.shields.io/badge/Docker-container-blue)](https://www.docker.com/)
+[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI-blue)](https://github.com/features/actions)
 
 ## Estado del Proyecto
 
@@ -21,6 +26,7 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 
 - Generación de reportes Excel de chequeras y planillas (incluye columnas HPUM, Beca e ID Mercado Pago)
 - Generación de planillas de detalle por sede (geográfica): horizontal y vertical
+- Descarga en un ZIP de varias planillas de detalle (horizontal o vertical) para una lista de facultades y sedes, con hasta 50 destinos por pedido
 - Planillas de pagos con información de contacto (emails institucional y personal)
 - Generación de planilla de "Lectivo Total Imputación" desde el módulo contable
 - Generación de PDF "Estado de Chequera" (dos hojas: cuotas por producto con subtotales y débitos automáticos agrupados por tipo)
@@ -124,3 +130,25 @@ El botón de descarga del frontend se implementa en frontend-client, fuera de es
 Las pruebas automáticas usan datos ficticios. `MateriasInscriptasHttpContractTest` usa un core HTTP
 simulado y overrides de URL locales; no es un E2E. Las pruebas reales se documentan aparte y no se
 incluyen en la suite. No guardar respuestas ni PDFs con datos personales en el repositorio.
+
+### ZIP de planillas de detalle
+
+`POST /api/tesoreria/report/chequeras/planilla/detalle/zip`
+
+```json
+{
+  "lectivoId": 38,
+  "formato": "HORIZONTAL",
+  "destinos": [
+    { "facultadId": 6, "geograficaId": 1 },
+    { "facultadId": 6, "geograficaId": 2 }
+  ]
+}
+```
+
+Descarga `detalle-cuotas-{lectivoId}-{formato}.zip` (`application/zip`) con una planilla
+`detalle-cuotas-{facultadId}-{lectivoId}-{geograficaId}.xlsx` por destino. `formato` acepta `HORIZONTAL`
+o `VERTICAL` y reutiliza los generadores de la planilla de detalle. `destinos` debe tener entre 1 y 50
+elementos; los repetidos se deduplican. Una solicitud inválida responde `400 Bad Request`. Los XLSX
+temporales se eliminan después de copiarse al ZIP, y el ZIP se borra al terminar la descarga o si falla
+la generación.
