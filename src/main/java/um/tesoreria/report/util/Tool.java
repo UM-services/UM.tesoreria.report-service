@@ -17,6 +17,11 @@ import java.nio.file.Path;
 public class Tool {
 
     public static ResponseEntity<Resource> generateFile(String filename, String headerFilename) throws FileNotFoundException {
+        return generateFile(filename, headerFilename, MediaType.APPLICATION_OCTET_STREAM);
+    }
+
+    public static ResponseEntity<Resource> generateFile(String filename, String headerFilename,
+                                                        MediaType contentType) throws FileNotFoundException {
         File file = new File(filename);
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
         HttpHeaders headers = new HttpHeaders();
@@ -25,13 +30,19 @@ public class Tool {
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
         return ResponseEntity.ok().headers(headers).contentLength(file.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+                .contentType(contentType).body(resource);
     }
 
 
     /** Solo para reportes con un archivo propio por solicitud. Spring cierra el stream al descargar. */
     public static ResponseEntity<Resource> generateTemporaryFile(String filename, String headerFilename) throws IOException {
-        ResponseEntity<Resource> response = generateFile(filename, headerFilename);
+        return generateTemporaryFile(filename, headerFilename, MediaType.APPLICATION_OCTET_STREAM);
+    }
+
+    /** Igual que {@link #generateTemporaryFile(String, String)}, con content type explícito. */
+    public static ResponseEntity<Resource> generateTemporaryFile(String filename, String headerFilename,
+                                                                 MediaType contentType) throws IOException {
+        ResponseEntity<Resource> response = generateFile(filename, headerFilename, contentType);
         Resource resource = new InputStreamResource(new FilterInputStream(response.getBody().getInputStream()) {
             @Override
             public void close() throws IOException {

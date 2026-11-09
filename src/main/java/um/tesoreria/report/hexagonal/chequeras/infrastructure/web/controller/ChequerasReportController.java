@@ -1,17 +1,26 @@
 package um.tesoreria.report.hexagonal.chequeras.infrastructure.web.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import um.tesoreria.report.hexagonal.chequeras.application.service.ChequerasReportService;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.DestinoPlanilla;
+import um.tesoreria.report.hexagonal.chequeras.infrastructure.web.dto.PlanillaDetalleZipRequest;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Locale;
 
 import static um.tesoreria.report.util.Tool.generateFile;
 import static um.tesoreria.report.util.Tool.generateTemporaryFile;
@@ -38,6 +47,23 @@ public class ChequerasReportController {
                                                                     @PathVariable Integer geograficaId) throws FileNotFoundException {
         log.debug("Processing ChequerasReportController.generatePlanillaDetalleVertical");
         return generateFile(service.generatePlanillaDetalleVertical(facultadId, lectivoId, geograficaId), "planilla.xlsx");
+    }
+
+    @PostMapping("/planilla/detalle/zip")
+    public ResponseEntity<Resource> generatePlanillaDetalleZip(@Valid @RequestBody PlanillaDetalleZipRequest request)
+            throws IOException {
+        log.debug("Processing ChequerasReportController.generatePlanillaDetalleZip");
+        try {
+            var destinos = request.destinos().stream()
+                    .map(destino -> new DestinoPlanilla(destino.facultadId(), destino.geograficaId()))
+                    .toList();
+            String filename = service.generatePlanillaDetalleZip(request.lectivoId(), request.formato(), destinos);
+            String headerFilename = "detalle-cuotas-" + request.lectivoId() + "-"
+                    + request.formato().name().toLowerCase(Locale.ROOT) + ".zip";
+            return generateTemporaryFile(filename, headerFilename, MediaType.parseMediaType("application/zip"));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
     }
 
     @GetMapping("/planilla/pagos/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/lectivo/{lectivoId}")
