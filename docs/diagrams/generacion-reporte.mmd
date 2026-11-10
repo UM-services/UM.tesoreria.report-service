@@ -6,6 +6,7 @@ sequenceDiagram
     participant GeneratePlanillaPagosUseCase
     participant GeneratePlanillaDetalleUseCase
     participant GeneratePlanillaDetalleVerticalUseCase
+    participant GeneratePlanillaDetalleZipUseCase
     participant GenerateEstadoChequeraUseCase
     participant ChequeraClient
     participant OpenPdfEstadoChequeraPdfGenerator
@@ -61,6 +62,17 @@ sequenceDiagram
     GeneratePlanillaDetalleVerticalUseCase-->>-ChequerasReportService: Reporte Excel generado
     ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
     ChequerasReportController-->>-User: ResponseEntity<Resource>
+
+    User->>+ChequerasReportController: POST /planilla/detalle/zip
+    ChequerasReportController->>+ChequerasReportService: generatePlanillaDetalleZip()
+    ChequerasReportService->>+GeneratePlanillaDetalleZipUseCase: generatePlanillaDetalleZip()
+    loop Para cada destino (máximo 50)
+        GeneratePlanillaDetalleZipUseCase->>+GeneratePlanillaDetalleUseCase: planilla horizontal o vertical
+        GeneratePlanillaDetalleUseCase-->>-GeneratePlanillaDetalleZipUseCase: XLSX temporal
+    end
+    GeneratePlanillaDetalleZipUseCase-->>-ChequerasReportService: ZIP temporal
+    ChequerasReportService-->>-ChequerasReportController: filename
+    ChequerasReportController-->>-User: detalle-cuotas-lectivo-formato.zip
 
     User->>+ChequerasReportController: GET /estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}
     ChequerasReportController->>+ChequerasReportService: generateEstadoChequera()
