@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import um.tesoreria.report.hexagonal.contable.domain.model.MayorSeleccion;
 import um.tesoreria.report.hexagonal.contable.domain.ports.in.GenerateMayorExcelUseCase;
+import um.tesoreria.report.hexagonal.contable.domain.ports.in.GenerateMayorPdfUseCase;
 import um.tesoreria.report.hexagonal.contable.infrastructure.web.dto.MayorExcelRequest;
 
 @RestController
@@ -22,7 +23,10 @@ public class MayorReportController {
     static final MediaType XLSX = MediaType.parseMediaType(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
+    static final MediaType PDF = MediaType.APPLICATION_PDF;
+
     private final GenerateMayorExcelUseCase useCase;
+    private final GenerateMayorPdfUseCase pdfUseCase;
 
     @PostMapping("/excel")
     public ResponseEntity<byte[]> excel(@RequestBody MayorExcelRequest request) {
@@ -33,6 +37,19 @@ public class MayorReportController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=mayor.xlsx")
                 .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
                 .contentType(XLSX)
+                .contentLength(contenido.length)
+                .body(contenido);
+    }
+
+    @PostMapping("/pdf")
+    public ResponseEntity<byte[]> pdf(@RequestBody MayorExcelRequest request) {
+        log.debug("Processing MayorReportController.pdf");
+        byte[] contenido = pdfUseCase.generate(new MayorSeleccion(request.desde(), request.hasta(),
+                request.cuentas(), request.cuentaDesde(), request.cuentaHasta()));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=mayor.pdf")
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                .contentType(PDF)
                 .contentLength(contenido.length)
                 .body(contenido);
     }
