@@ -5,6 +5,15 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0] - 2026-11-10
+
+### Added
+
+- `POST /api/tesoreria/report/contable/mayor/pdf`: exporta el mismo mayor a `mayor.pdf` (A4 apaisado, `application/pdf`). Recibe el mismo cuerpo que el Excel y el core (`desde`, `hasta` y `cuentas`, o `cuentaDesde`–`cuentaHasta`). Muestra el rango pedido arriba y, por cada cuenta, un bloque con saldo inicial, movimientos (con fecha, asiento, ejercicio, comprobante, proveedor, concepto, orden de pago, beneficiario, debe, haber, saldo y valor), totales y saldo final, con encabezado repetido en cada hoja y «Página n» al pie. Importes con formato es-AR, tal como los informa el core; el report no calcula ni reordena.
+- Los rechazos del core (`409`, `404`) y el `502 CORE_NO_DISPONIBLE` se responden igual que en el Excel, sin generar archivo.
+- Hexagonal (slice `contable`): puerto de salida `MayorPdfGenerator`, caso de uso `GenerateMayorPdfUseCase`/`Impl`, adaptador `OpenPdfMayorPdfGenerator` (OpenPDF, ya usado en chequeras) y el método `pdf` de `MayorReportController`.
+- Tests: `GenerateMayorPdfUseCaseImplTest` y `OpenPdfMayorPdfGeneratorTest`.
+
 ## [0.16.0] - 2026-11-09
 
 ### Added
