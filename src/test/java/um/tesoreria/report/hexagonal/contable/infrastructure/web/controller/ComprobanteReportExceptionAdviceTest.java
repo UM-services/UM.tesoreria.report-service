@@ -28,7 +28,7 @@ class ComprobanteReportExceptionAdviceTest {
         assertThat(respuesta.getBody()).contains("\"codigo\":\"COMPROBANTE_INEXISTENTE\"");
     }
 
-    // protects=un comprobante que no es orden de pago se informa 409 COMPROBANTE_NO_SOPORTADO; fails_when=se confunde con un fallo del core o se genera un archivo; no_claim=no prueba la impresión de facturas, que no existe todavía
+    // protects=un comprobante que el core rechaza con 409 se informa 409 COMPROBANTE_NO_SOPORTADO; fails_when=se confunde con un fallo del core o se genera un archivo; no_claim=no prueba qué comprobantes rechaza el core
     @Test
     void core_conflictBecomesUnsupportedVoucher() {
         ResponseEntity<String> respuesta = advice.core(new FeignException.Conflict("x", request(), null, Map.of()));
