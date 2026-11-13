@@ -5,6 +5,17 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2026-11-13
+
+### Added
+
+- **PDF de facturas y notas de crédito de compras** («Ingreso de Comprobante de Compras» del sistema anterior): `GET /api/tesoreria/report/contable/comprobante/{proveedorMovimientoId}/pdf` ahora imprime también facturas y notas de crédito, además de las órdenes de pago. A4 vertical con logo, tipo y número, fecha, proveedor, CUIT, total, concepto, detalle de artículos (Detalle / Cantidad / Precio / Subtotal), asiento contable (Cuenta / Debe / Haber con totales) y leyenda «ANULADO el dd/MM/yyyy» si corresponde. Los importes salen tal como los guarda el core, con su signo (la nota de crédito en negativo), en formato es-AR.
+- `GenerateComprobantePdfUseCase`: consulta el `tipo` en el core (`/detalle`) y elige el formato de orden de pago o el de compras. Nuevos `GenerateCompraPdfUseCase`, `CompraRepository`, `CompraPdfGenerator` (`OpenPdfCompraPdfGenerator`), `ComprobanteTipoRepository`, `CompraClient` (`/impresion-compra` y `/detalle`) y `FeignCompraRepositoryAdapter`.
+- Tests del generador, del despacho, del adaptador y del caso de uso de compras.
+### Changed
+
+- `ComprobanteReportController` usa `GenerateComprobantePdfUseCase` y el archivo se llama `comprobante-{id}.pdf` (antes `orden-pago-{id}.pdf`). El `409 COMPROBANTE_NO_SOPORTADO` queda para lo que el core rechace y su mensaje pasa a «El comprobante no se puede imprimir».
+
 ## [0.17.0] - 2026-11-12
 
 ### Added

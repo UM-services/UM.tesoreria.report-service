@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * Traduce lo que responde el core al pedido de la orden de pago: 404 si el comprobante no existe, 409 si no es una
- * orden de pago (todavía no se imprimen facturas ni notas de crédito) y 502 si el core no responde o falla.
+ * Traduce lo que responde el core al pedido de impresión de un comprobante (orden de pago, factura o nota de crédito):
+ * 404 si el comprobante no existe, 409 si el core lo rechaza por no ser imprimible con ese formato y 502 si el core no responde o falla.
  * Todos con cuerpo {@code {status, error, codigo, message}}.
  */
 @RestControllerAdvice(assignableTypes = ComprobanteReportController.class)
@@ -18,7 +18,7 @@ public class ComprobanteReportExceptionAdvice {
     static final String NO_EXISTE = cuerpo(404, "Not Found", "COMPROBANTE_INEXISTENTE",
             "El comprobante no existe");
     static final String NO_SOPORTADO = cuerpo(409, "Conflict", "COMPROBANTE_NO_SOPORTADO",
-            "Por ahora sólo se imprimen órdenes de pago");
+            "El comprobante no se puede imprimir");
     static final String NO_DISPONIBLE = cuerpo(502, "Bad Gateway", "CORE_NO_DISPONIBLE",
             "No se pudo consultar el comprobante en el core");
 
