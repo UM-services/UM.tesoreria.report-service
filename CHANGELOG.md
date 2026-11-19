@@ -5,6 +5,35 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2026-11-13
+
+### Added
+
+- **PDF de facturas y notas de crédito de compras** («Ingreso de Comprobante de Compras» del sistema anterior): `GET /api/tesoreria/report/contable/comprobante/{proveedorMovimientoId}/pdf` ahora imprime también facturas y notas de crédito, además de las órdenes de pago. A4 vertical con logo, tipo y número, fecha, proveedor, CUIT, total, concepto, detalle de artículos (Detalle / Cantidad / Precio / Subtotal), asiento contable (Cuenta / Debe / Haber con totales) y leyenda «ANULADO el dd/MM/yyyy» si corresponde. Los importes salen tal como los guarda el core, con su signo (la nota de crédito en negativo), en formato es-AR.
+- `GenerateComprobantePdfUseCase`: consulta el `tipo` en el core (`/detalle`) y elige el formato de orden de pago o el de compras. Nuevos `GenerateCompraPdfUseCase`, `CompraRepository`, `CompraPdfGenerator` (`OpenPdfCompraPdfGenerator`), `ComprobanteTipoRepository`, `CompraClient` (`/impresion-compra` y `/detalle`) y `FeignCompraRepositoryAdapter`.
+- Tests del generador, del despacho, del adaptador y del caso de uso de compras.
+### Changed
+
+- `ComprobanteReportController` usa `GenerateComprobantePdfUseCase` y el archivo se llama `comprobante-{id}.pdf` (antes `orden-pago-{id}.pdf`). El `409 COMPROBANTE_NO_SOPORTADO` queda para lo que el core rechace y su mensaje pasa a «El comprobante no se puede imprimir».
+
+## [0.17.0] - 2026-11-12
+
+### Added
+
+- `GET /api/tesoreria/report/contable/comprobante/{proveedorMovimientoId}/pdf`: reimpresión de la **orden de pago** en `orden-pago-{id}.pdf` (A4 vertical, `application/pdf`). Pide la orden al core (`GET /api/tesoreria/core/proveedorMovimiento/{id}/impresion`) y arma el PDF con OpenPDF: logo de la UM, «Nº: prefijo - número» sin ceros, fecha `dd/MM/yyyy`, proveedor (señor/es, CUIT, domicilio) y concepto, comprobantes que cancela con su total, valores con su total, traza contable compacta (cuenta, debe y haber con totales), total a pagar destacado y firmas de Secretaría y Rector. Los importes y totales son los que informa el core, con formato es-AR; las tablas repiten el encabezado si continúan en otra hoja y las páginas van numeradas. Una orden anulada lo indica con su fecha.
+- Errores: `404 COMPROBANTE_INEXISTENTE` si el comprobante no existe, `409 COMPROBANTE_NO_SOPORTADO` si no es una orden de pago (las facturas y notas de crédito llegan después) y `502 CORE_NO_DISPONIBLE` si el core falla o no responde, con cuerpo `{status, error, codigo, message}`. Si el core no tiene aún el endpoint de impresión, el `404` se informa como `COMPROBANTE_INEXISTENTE`.
+- Hexagonal (slice `contable`): modelo `OrdenPago`, puertos `GenerateOrdenPagoPdfUseCase`, `OrdenPagoRepository` y `OrdenPagoPdfGenerator`, caso de uso `GenerateOrdenPagoPdfUseCaseImpl`, cliente Feign `OrdenPagoClient` con `OrdenPagoImpresionDto` y `FeignOrdenPagoRepositoryAdapter`, generador `OpenPdfOrdenPagoPdfGenerator`, `ComprobanteReportController` y `ComprobanteReportExceptionAdvice`.
+- Tests: `OpenPdfOrdenPagoPdfGeneratorTest`, `GenerateOrdenPagoPdfUseCaseImplTest`, `FeignOrdenPagoRepositoryAdapterTest` y `ComprobanteReportExceptionAdviceTest`.
+
+## [0.16.0] - 2026-11-10
+
+### Added
+
+- `POST /api/tesoreria/report/contable/mayor/pdf`: exporta el mismo mayor a `mayor.pdf` (A4 apaisado, `application/pdf`). Recibe el mismo cuerpo que el Excel y el core (`desde`, `hasta` y `cuentas`, o `cuentaDesde`–`cuentaHasta`). Muestra el rango pedido arriba y, por cada cuenta, un bloque con saldo inicial, movimientos (con fecha, asiento, ejercicio, comprobante, proveedor, concepto, orden de pago, beneficiario, debe, haber, saldo y valor), totales y saldo final, con encabezado repetido en cada hoja y «Página n» al pie. Importes con formato es-AR, tal como los informa el core; el report no calcula ni reordena.
+- Los rechazos del core (`409`, `404`) y el `502 CORE_NO_DISPONIBLE` se responden igual que en el Excel, sin generar archivo.
+- Hexagonal (slice `contable`): puerto de salida `MayorPdfGenerator`, caso de uso `GenerateMayorPdfUseCase`/`Impl`, adaptador `OpenPdfMayorPdfGenerator` (OpenPDF, ya usado en chequeras) y el método `pdf` de `MayorReportController`.
+- Tests: `GenerateMayorPdfUseCaseImplTest` y `OpenPdfMayorPdfGeneratorTest`.
+
 ## [0.16.0] - 2026-11-09
 
 ### Added
