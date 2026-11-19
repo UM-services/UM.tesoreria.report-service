@@ -1,10 +1,9 @@
-package um.tesoreria.report.hexagonal.contable.infrastructure.client.adapter.adapter;
+package um.tesoreria.report.hexagonal.contable.infrastructure.client.adapter;
 
 import org.junit.jupiter.api.Test;
 import um.tesoreria.report.hexagonal.contable.domain.model.CuentaPlan;
 import um.tesoreria.report.hexagonal.contable.infrastructure.client.CuentaClient;
 import um.tesoreria.report.hexagonal.contable.infrastructure.client.SedeClient;
-import um.tesoreria.report.hexagonal.contable.infrastructure.client.adapter.FeignPlanCuentasRepositoryAdapter;
 import um.tesoreria.report.hexagonal.contable.infrastructure.client.dto.CuentaPlanDto;
 import um.tesoreria.report.hexagonal.contable.infrastructure.client.dto.SedeDto;
 
