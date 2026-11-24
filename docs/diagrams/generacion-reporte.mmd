@@ -7,8 +7,11 @@ sequenceDiagram
     participant GeneratePlanillaDetalleUseCase
     participant GeneratePlanillaDetalleVerticalUseCase
     participant GeneratePlanillaDetalleZipUseCase
+    participant GeneratePlanillaBorradorUseCase
+    participant GeneratePlanillaBorradorVerticalUseCase
     participant GenerateEstadoChequeraUseCase
     participant ChequeraClient
+    participant BorradorClient
     participant OpenPdfEstadoChequeraPdfGenerator
     participant ContableReportController
     participant ContableReportService
@@ -63,16 +66,56 @@ sequenceDiagram
     ChequerasReportService-->>-ChequerasReportController: ResponseEntity<Resource>
     ChequerasReportController-->>-User: ResponseEntity<Resource>
 
+    User->>+ChequerasReportController: GET /planilla/detalle/borradores/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}
+    ChequerasReportController->>+ChequerasReportService: generatePlanillaBorrador()
+    ChequerasReportService->>+GeneratePlanillaBorradorUseCase: generatePlanillaBorrador()
+    GeneratePlanillaBorradorUseCase->>+Adapters: findAllBySede()
+    Adapters->>+BorradorClient: findAllBySede()
+    BorradorClient->>+CoreService: GET /api/tesoreria/core/emision/chequera/borradores/sede/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}
+    CoreService-->>-BorradorClient: Lista de BorradorDto
+    BorradorClient-->>-Adapters: Lista de BorradorDto
+    Adapters-->>-GeneratePlanillaBorradorUseCase: Lista de borradores abiertos
+    GeneratePlanillaBorradorUseCase->>+Adapters: findAllByFacultadId()
+    Adapters->>+CoreService: GET /api/tesoreria/core/legajo
+    CoreService-->>-Adapters: Información de legajos
+    Note over GeneratePlanillaBorradorUseCase: Una fila por borrador<br/>Estados, importes original y borrador, vencimientos y totales<br/>Sin columnas de pagos
+    GeneratePlanillaBorradorUseCase-->>-ChequerasReportService: Reporte Excel generado
+    ChequerasReportService-->>-ChequerasReportController: filename
+    ChequerasReportController-->>-User: detalle-borradores.xlsx
+
+    User->>+ChequerasReportController: GET /planilla/detalle/borradores/vertical/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}
+    ChequerasReportController->>+ChequerasReportService: generatePlanillaBorradorVertical()
+    ChequerasReportService->>+GeneratePlanillaBorradorVerticalUseCase: generatePlanillaBorrador()
+    GeneratePlanillaBorradorVerticalUseCase->>+Adapters: findAllBySede()
+    Adapters->>+BorradorClient: findAllBySede()
+    BorradorClient->>+CoreService: GET /api/tesoreria/core/emision/chequera/borradores/sede/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}
+    CoreService-->>-BorradorClient: Lista de BorradorDto
+    BorradorClient-->>-Adapters: Lista de BorradorDto
+    Adapters-->>-GeneratePlanillaBorradorVerticalUseCase: Lista de borradores abiertos
+    GeneratePlanillaBorradorVerticalUseCase->>+Adapters: findAllByFacultadId()
+    Adapters->>+CoreService: GET /api/tesoreria/core/legajo
+    CoreService-->>-Adapters: Información de legajos
+    Note over GeneratePlanillaBorradorVerticalUseCase: Una fila por cuota<br/>Tres vencimientos y flags pagado, baja, compensada y bloqueada<br/>Sin columnas de pagos
+    GeneratePlanillaBorradorVerticalUseCase-->>-ChequerasReportService: Reporte Excel generado
+    ChequerasReportService-->>-ChequerasReportController: filename
+    ChequerasReportController-->>-User: detalle-borradores.xlsx
+
     User->>+ChequerasReportController: POST /planilla/detalle/zip
     ChequerasReportController->>+ChequerasReportService: generatePlanillaDetalleZip()
     ChequerasReportService->>+GeneratePlanillaDetalleZipUseCase: generatePlanillaDetalleZip()
+    Note over GeneratePlanillaDetalleZipUseCase: origen CHEQUERAS (por defecto) o BORRADORES
     loop Para cada destino (máximo 50)
-        GeneratePlanillaDetalleZipUseCase->>+GeneratePlanillaDetalleUseCase: planilla horizontal o vertical
-        GeneratePlanillaDetalleUseCase-->>-GeneratePlanillaDetalleZipUseCase: XLSX temporal
+        alt origen CHEQUERAS
+            GeneratePlanillaDetalleZipUseCase->>+GeneratePlanillaDetalleUseCase: planilla horizontal o vertical
+            GeneratePlanillaDetalleUseCase-->>-GeneratePlanillaDetalleZipUseCase: XLSX temporal
+        else origen BORRADORES
+            GeneratePlanillaDetalleZipUseCase->>+GeneratePlanillaBorradorUseCase: planilla horizontal o vertical de borradores
+            GeneratePlanillaBorradorUseCase-->>-GeneratePlanillaDetalleZipUseCase: XLSX temporal
+        end
     end
     GeneratePlanillaDetalleZipUseCase-->>-ChequerasReportService: ZIP temporal
     ChequerasReportService-->>-ChequerasReportController: filename
-    ChequerasReportController-->>-User: detalle-cuotas-lectivo-formato.zip
+    ChequerasReportController-->>-User: detalle-cuotas-lectivo-formato.zip o detalle-borradores-lectivo-formato.zip
 
     User->>+ChequerasReportController: GET /estado/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/chequeraSerie/{chequeraSerieId}/alternativa/{alternativaId}
     ChequerasReportController->>+ChequerasReportService: generateEstadoChequera()

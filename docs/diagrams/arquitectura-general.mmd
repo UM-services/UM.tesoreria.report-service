@@ -23,6 +23,8 @@ graph TD
         N3["OpenPdfMateriasInscriptasPdfGenerator"]
         G4 --> J
         G3 --> J
+        G5["BorradorClient"]
+        G5 --> J
         J --> K
     end
 
@@ -52,6 +54,12 @@ graph TD
         T3["GeneratePlanillaDetalleZipUseCase"]
         L --> T3
         T3 -.-> P
+        T4["GeneratePlanillaBorradorUseCase"]
+        T5["GeneratePlanillaBorradorVerticalUseCase"]
+        L --> T4
+        L --> T5
+        T4 -.-> P
+        T5 -.-> P
         L2 --> S
     end
 
@@ -76,6 +84,7 @@ graph TD
     T2 -.-> P
     Q -.-> N3
     Q -.-> N2
+    Q -.-> G5
     J --> B
     J --> C
     J --> D
