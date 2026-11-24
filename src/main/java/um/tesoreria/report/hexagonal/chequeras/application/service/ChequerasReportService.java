@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.DestinoPlanilla;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.FormatoPlanilla;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.OrigenPlanilla;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GenerateEstadoChequeraUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GenerateMateriasInscriptasUseCase;
+import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaBorradorUseCase;
+import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaBorradorVerticalUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaDetalleUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaDetalleVerticalUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaDetalleZipUseCase;
@@ -20,6 +23,8 @@ public class ChequerasReportService {
     private final GeneratePlanillaDetalleUseCase generatePlanillaDetalleUseCase;
     private final GeneratePlanillaDetalleVerticalUseCase generatePlanillaDetalleVerticalUseCase;
     private final GeneratePlanillaDetalleZipUseCase generatePlanillaDetalleZipUseCase;
+    private final GeneratePlanillaBorradorUseCase generatePlanillaBorradorUseCase;
+    private final GeneratePlanillaBorradorVerticalUseCase generatePlanillaBorradorVerticalUseCase;
     private final GeneratePlanillaPagosUseCase generatePlanillaPagosUseCase;
     private final GenerateMateriasInscriptasUseCase generateMateriasInscriptasUseCase;
     private final GenerateEstadoChequeraUseCase generateEstadoChequeraUseCase;
@@ -33,8 +38,16 @@ public class ChequerasReportService {
     }
 
     public String generatePlanillaDetalleZip(Integer lectivoId, FormatoPlanilla formato,
-                                             List<DestinoPlanilla> destinos) {
-        return generatePlanillaDetalleZipUseCase.generatePlanillaDetalleZip(lectivoId, formato, destinos);
+                                             OrigenPlanilla origen, List<DestinoPlanilla> destinos) {
+        return generatePlanillaDetalleZipUseCase.generatePlanillaDetalleZip(lectivoId, formato, origen, destinos);
+    }
+
+    public String generatePlanillaBorrador(Integer facultadId, Integer lectivoId, Integer geograficaId) {
+        return generatePlanillaBorradorUseCase.generatePlanillaBorrador(facultadId, lectivoId, geograficaId);
+    }
+
+    public String generatePlanillaBorradorVertical(Integer facultadId, Integer lectivoId, Integer geograficaId) {
+        return generatePlanillaBorradorVerticalUseCase.generatePlanillaBorrador(facultadId, lectivoId, geograficaId);
     }
 
     public String generatePlanillaPagos(Integer facultadId, Integer tipoChequeraId, Integer lectivoId) {

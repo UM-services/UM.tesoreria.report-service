@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import um.tesoreria.report.hexagonal.chequeras.application.service.ChequerasReportService;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.DestinoPlanilla;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.FormatoPlanilla;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.OrigenPlanilla;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -38,7 +39,7 @@ class ChequerasReportControllerZipTest {
         byte[] bytes = "PK-fixture".getBytes(StandardCharsets.US_ASCII);
         Path archivo = directorio.resolve("detalle.zip");
         Files.write(archivo, bytes);
-        when(service.generatePlanillaDetalleZip(eq(38), eq(FormatoPlanilla.HORIZONTAL),
+        when(service.generatePlanillaDetalleZip(eq(38), eq(FormatoPlanilla.HORIZONTAL), eq(OrigenPlanilla.CHEQUERAS),
                 eq(List.of(new DestinoPlanilla(6, 1), new DestinoPlanilla(6, 2)))))
                 .thenReturn(archivo.toString());
         var mvc = MockMvcBuilders.standaloneSetup(new ChequerasReportController(service)).build();
@@ -62,9 +63,42 @@ class ChequerasReportControllerZipTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
                 .andExpect(content().bytes(bytes));
 
-        verify(service).generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL,
+        verify(service).generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL, OrigenPlanilla.CHEQUERAS,
                 List.of(new DestinoPlanilla(6, 1), new DestinoPlanilla(6, 2)));
         assertThat(archivo).doesNotExist();
+    }
+
+    // protects=el origen BORRADORES cambia el nombre del ZIP descargado y llega al servicio; fails_when=ignora el
+    // origen o conserva el prefijo detalle-cuotas; no_claim=no prueba la generación real de los XLSX.
+    @Test
+    void descargaElZipDeBorradoresConSuPropioNombre(@TempDir Path directorio) throws Exception {
+        ChequerasReportService service = mock(ChequerasReportService.class);
+        byte[] bytes = "PK-borradores".getBytes(StandardCharsets.US_ASCII);
+        Path archivo = directorio.resolve("borradores.zip");
+        Files.write(archivo, bytes);
+        when(service.generatePlanillaDetalleZip(eq(38), eq(FormatoPlanilla.VERTICAL), eq(OrigenPlanilla.BORRADORES),
+                eq(List.of(new DestinoPlanilla(14, 1)))))
+                .thenReturn(archivo.toString());
+        var mvc = MockMvcBuilders.standaloneSetup(new ChequerasReportController(service)).build();
+
+        mvc.perform(post(RUTA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "lectivoId": 38,
+                                  "formato": "VERTICAL",
+                                  "origen": "BORRADORES",
+                                  "destinos": [ { "facultadId": 14, "geograficaId": 1 } ]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition",
+                        "attachment; filename=detalle-borradores-38-vertical.zip"))
+                .andExpect(content().contentType(MediaType.parseMediaType("application/zip")))
+                .andExpect(content().bytes(bytes));
+
+        verify(service).generatePlanillaDetalleZip(38, FormatoPlanilla.VERTICAL, OrigenPlanilla.BORRADORES,
+                List.of(new DestinoPlanilla(14, 1)));
     }
 
     // protects=una selección vacía se rechaza con 400 sin llamar al servicio; fails_when=genera un ZIP vacío;

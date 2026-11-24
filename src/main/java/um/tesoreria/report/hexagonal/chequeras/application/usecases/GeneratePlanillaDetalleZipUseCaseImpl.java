@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.DestinoPlanilla;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.FormatoPlanilla;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.OrigenPlanilla;
+import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaBorradorUseCase;
+import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaBorradorVerticalUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaDetalleUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaDetalleVerticalUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaDetalleZipUseCase;
@@ -27,23 +30,25 @@ public class GeneratePlanillaDetalleZipUseCaseImpl implements GeneratePlanillaDe
 
     private final GeneratePlanillaDetalleUseCase planillaDetalleUseCase;
     private final GeneratePlanillaDetalleVerticalUseCase planillaDetalleVerticalUseCase;
+    private final GeneratePlanillaBorradorUseCase planillaBorradorUseCase;
+    private final GeneratePlanillaBorradorVerticalUseCase planillaBorradorVerticalUseCase;
 
     @Override
-    public String generatePlanillaDetalleZip(Integer lectivoId, FormatoPlanilla formato,
+    public String generatePlanillaDetalleZip(Integer lectivoId, FormatoPlanilla formato, OrigenPlanilla origen,
                                              List<DestinoPlanilla> destinos) {
         log.debug("Processing GeneratePlanillaDetalleZipUseCaseImpl.generatePlanillaDetalleZip");
+        OrigenPlanilla origenSeguro = origen == null ? OrigenPlanilla.CHEQUERAS : origen;
         List<DestinoPlanilla> seleccion = validar(lectivoId, formato, destinos);
 
         Path zip = null;
         List<Path> generados = new ArrayList<>();
         try {
-            zip = Files.createTempFile("detalle-cuotas-" + lectivoId + "-", ".zip");
-            try (ZipOutputStream salida = new ZipOutputStream(Files.newOutputStream(zip))) {
+            zip = Files.createTempFile("detalle-" + prefijo(origenSeguro) + lectivoId + "-", ".zip");            try (ZipOutputStream salida = new ZipOutputStream(Files.newOutputStream(zip))) {
                 for (DestinoPlanilla destino : seleccion) {
-                    Path archivo = Path.of(generarPlanilla(lectivoId, formato, destino));
+                    Path archivo = Path.of(generarPlanilla(lectivoId, formato, origenSeguro, destino));
                     generados.add(archivo);
-                    String nombre = MessageFormat.format("detalle-cuotas-{0}-{1}-{2}.xlsx",
-                            destino.facultadId(), lectivoId, destino.geograficaId());
+                    String nombre = MessageFormat.format("detalle-{0}-{1}-{2}.xlsx",
+                            prefijo(origenSeguro) + destino.facultadId(), lectivoId, destino.geograficaId());
                     salida.putNextEntry(new ZipEntry(nombre));
                     Files.copy(archivo, salida);
                     salida.closeEntry();
@@ -59,6 +64,13 @@ public class GeneratePlanillaDetalleZipUseCaseImpl implements GeneratePlanillaDe
         } finally {
             generados.forEach(this::eliminar);
         }
+    }
+
+    /**
+     * Prefijo del nombre de archivo: {@code cuotas-} o {@code borradores-} según el origen.
+     */
+    private static String prefijo(OrigenPlanilla origen) {
+        return origen == OrigenPlanilla.BORRADORES ? "borradores-" : "cuotas-";
     }
 
     private List<DestinoPlanilla> validar(Integer lectivoId, FormatoPlanilla formato,
@@ -84,7 +96,16 @@ public class GeneratePlanillaDetalleZipUseCaseImpl implements GeneratePlanillaDe
         return seleccion;
     }
 
-    private String generarPlanilla(Integer lectivoId, FormatoPlanilla formato, DestinoPlanilla destino) {
+    private String generarPlanilla(Integer lectivoId, FormatoPlanilla formato, OrigenPlanilla origen,
+                                   DestinoPlanilla destino) {
+        if (origen == OrigenPlanilla.BORRADORES) {
+            return switch (formato) {
+                case HORIZONTAL -> planillaBorradorUseCase.generatePlanillaBorrador(
+                        destino.facultadId(), lectivoId, destino.geograficaId());
+                case VERTICAL -> planillaBorradorVerticalUseCase.generatePlanillaBorrador(
+                        destino.facultadId(), lectivoId, destino.geograficaId());
+            };
+        }
         return switch (formato) {
             case HORIZONTAL -> planillaDetalleUseCase.generatePlanillaDetalle(
                     destino.facultadId(), lectivoId, destino.geograficaId());
