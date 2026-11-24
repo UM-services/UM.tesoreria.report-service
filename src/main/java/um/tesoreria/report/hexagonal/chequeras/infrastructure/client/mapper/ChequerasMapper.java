@@ -433,4 +433,67 @@ public class ChequerasMapper {
                                                 materia.materiaId(), materia.nombre())).toList())).toList())).toList()))
                 .toList();
     }
+
+    public Borrador toDomain(BorradorDto dto) {
+        if (dto == null) return null;
+        return Borrador.builder()
+                .borradorId(dto.getBorradorId())
+                .estado(dto.getEstado())
+                .personaId(dto.getPersonaId())
+                .documentoId(dto.getDocumentoId())
+                .personaApellido(dto.getPersonaApellido())
+                .personaNombre(dto.getPersonaNombre())
+                .facultadId(dto.getFacultadId())
+                .facultadNombre(dto.getFacultadNombre())
+                .geograficaId(dto.getGeograficaId())
+                .geograficaNombre(dto.getGeograficaNombre())
+                .lectivoId(dto.getLectivoId())
+                .lectivoNombre(dto.getLectivoNombre())
+                .tipoChequeraId(dto.getTipoChequeraId())
+                .tipoChequeraNombre(dto.getTipoChequeraNombre())
+                .arancelTipoId(dto.getArancelTipoId())
+                .alternativaId(dto.getAlternativaId())
+                .cursoId(dto.getCursoId())
+                .hpum(dto.getHpum())
+                .becaPorcentaje(dto.getBecaPorcentaje())
+                .cuotas(dto.getCuotas() == null ? List.of()
+                        : dto.getCuotas().stream().map(this::toDomain).toList())
+                .alternativas(dto.getAlternativas() == null ? List.of()
+                        : dto.getAlternativas().stream().map(alternativa -> BorradorAlternativa.builder()
+                                .alternativaId(alternativa.getAlternativaId())
+                                .productoId(alternativa.getProductoId())
+                                .titulo(alternativa.getTitulo())
+                                .build()).toList())
+                .arancelTipos(dto.getArancelTipos() == null ? List.of()
+                        : dto.getArancelTipos().stream().map(tipo -> BorradorArancelTipo.builder()
+                                .arancelTipoId(tipo.getArancelTipoId())
+                                .nombre(tipo.getNombre())
+                                .build()).toList())
+                .build();
+    }
+
+    private BorradorCuota toDomain(BorradorDto.CuotaDto dto) {
+        return BorradorCuota.builder()
+                .borradorCuotaId(dto.getBorradorCuotaId())
+                .productoId(dto.getProductoId())
+                .alternativaId(dto.getAlternativaId())
+                .cuotaId(dto.getCuotaId())
+                .mes(dto.getMes())
+                .anio(dto.getAnio())
+                .vencimiento1(dto.getVencimiento1())
+                .vencimiento2(dto.getVencimiento2())
+                .vencimiento3(dto.getVencimiento3())
+                .importe1Original(dto.getImporte1Original())
+                .importe2Original(dto.getImporte2Original())
+                .importe3Original(dto.getImporte3Original())
+                .importe1Borrador(dto.getImporte1Borrador())
+                .importe2Borrador(dto.getImporte2Borrador())
+                .importe3Borrador(dto.getImporte3Borrador())
+                .pagado(dto.getPagado())
+                .baja(dto.getBaja())
+                .manual(dto.getManual())
+                .compensada(dto.getCompensada())
+                .bloqueado(dto.getBloqueado())
+                .build();
+    }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import um.tesoreria.report.hexagonal.chequeras.application.service.ChequerasReportService;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.DestinoPlanilla;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.OrigenPlanilla;
 import um.tesoreria.report.hexagonal.chequeras.infrastructure.web.dto.PlanillaDetalleZipRequest;
 
 import java.io.FileNotFoundException;
@@ -57,13 +58,34 @@ public class ChequerasReportController {
             var destinos = request.destinos().stream()
                     .map(destino -> new DestinoPlanilla(destino.facultadId(), destino.geograficaId()))
                     .toList();
-            String filename = service.generatePlanillaDetalleZip(request.lectivoId(), request.formato(), destinos);
-            String headerFilename = "detalle-cuotas-" + request.lectivoId() + "-"
+            OrigenPlanilla origen = request.origen() == null ? OrigenPlanilla.CHEQUERAS : request.origen();
+            String filename = service.generatePlanillaDetalleZip(request.lectivoId(), request.formato(), origen,
+                    destinos);
+            String prefijo = origen == OrigenPlanilla.BORRADORES ? "detalle-borradores-" : "detalle-cuotas-";
+            String headerFilename = prefijo + request.lectivoId() + "-"
                     + request.formato().name().toLowerCase(Locale.ROOT) + ".zip";
             return generateTemporaryFile(filename, headerFilename, MediaType.parseMediaType("application/zip"));
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
+    }
+
+    @GetMapping("/planilla/detalle/borradores/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}")
+    public ResponseEntity<Resource> generatePlanillaBorrador(@PathVariable Integer facultadId,
+                                                             @PathVariable Integer lectivoId,
+                                                             @PathVariable Integer geograficaId) throws IOException {
+        log.debug("Processing ChequerasReportController.generatePlanillaBorrador");
+        return generateTemporaryFile(service.generatePlanillaBorrador(facultadId, lectivoId, geograficaId),
+                "detalle-borradores.xlsx");
+    }
+
+    @GetMapping("/planilla/detalle/borradores/vertical/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}")
+    public ResponseEntity<Resource> generatePlanillaBorradorVertical(@PathVariable Integer facultadId,
+                                                                     @PathVariable Integer lectivoId,
+                                                                     @PathVariable Integer geograficaId) throws IOException {
+        log.debug("Processing ChequerasReportController.generatePlanillaBorradorVertical");
+        return generateTemporaryFile(service.generatePlanillaBorradorVertical(facultadId, lectivoId, geograficaId),
+                "detalle-borradores.xlsx");
     }
 
     @GetMapping("/planilla/pagos/facultad/{facultadId}/tipoChequera/{tipoChequeraId}/lectivo/{lectivoId}")
