@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.DestinoPlanilla;
 import um.tesoreria.report.hexagonal.chequeras.domain.model.FormatoPlanilla;
+import um.tesoreria.report.hexagonal.chequeras.domain.model.OrigenPlanilla;
+import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaBorradorUseCase;
+import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaBorradorVerticalUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaDetalleUseCase;
 import um.tesoreria.report.hexagonal.chequeras.domain.ports.in.GeneratePlanillaDetalleVerticalUseCase;
 
@@ -28,8 +31,11 @@ class GeneratePlanillaDetalleZipUseCaseImplTest {
     private final GeneratePlanillaDetalleUseCase planillaDetalle = mock(GeneratePlanillaDetalleUseCase.class);
     private final GeneratePlanillaDetalleVerticalUseCase planillaDetalleVertical =
             mock(GeneratePlanillaDetalleVerticalUseCase.class);
-    private final GeneratePlanillaDetalleZipUseCaseImpl useCase =
-            new GeneratePlanillaDetalleZipUseCaseImpl(planillaDetalle, planillaDetalleVertical);
+    private final GeneratePlanillaBorradorUseCase planillaBorrador = mock(GeneratePlanillaBorradorUseCase.class);
+    private final GeneratePlanillaBorradorVerticalUseCase planillaBorradorVertical =
+            mock(GeneratePlanillaBorradorVerticalUseCase.class);
+    private final GeneratePlanillaDetalleZipUseCaseImpl useCase = new GeneratePlanillaDetalleZipUseCaseImpl(
+            planillaDetalle, planillaDetalleVertical, planillaBorrador, planillaBorradorVertical);
 
     @TempDir
     Path directorio;
@@ -43,7 +49,7 @@ class GeneratePlanillaDetalleZipUseCaseImplTest {
         when(planillaDetalle.generatePlanillaDetalle(6, 38, 1)).thenReturn(primero);
         when(planillaDetalle.generatePlanillaDetalle(6, 38, 2)).thenReturn(segundo);
 
-        String zip = useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL,
+        String zip = useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL, OrigenPlanilla.CHEQUERAS,
                 List.of(new DestinoPlanilla(6, 1), new DestinoPlanilla(6, 2)));
 
         try (ZipFile zipFile = new ZipFile(zip)) {
@@ -51,7 +57,7 @@ class GeneratePlanillaDetalleZipUseCaseImplTest {
             assertThat(contenido(zipFile, "detalle-cuotas-6-38-1.xlsx")).isEqualTo("uno");
             assertThat(contenido(zipFile, "detalle-cuotas-6-38-2.xlsx")).isEqualTo("dos");
         }
-        verifyNoInteractions(planillaDetalleVertical);
+        verifyNoInteractions(planillaDetalleVertical, planillaBorrador, planillaBorradorVertical);
         assertThat(Path.of(primero)).doesNotExist();
         assertThat(Path.of(segundo)).doesNotExist();
     }
@@ -63,7 +69,7 @@ class GeneratePlanillaDetalleZipUseCaseImplTest {
         String archivo = archivo("vertical.xlsx", "vertical");
         when(planillaDetalleVertical.generatePlanillaDetalle(6, 38, 1)).thenReturn(archivo);
 
-        String zip = useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.VERTICAL,
+        String zip = useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.VERTICAL, OrigenPlanilla.CHEQUERAS,
                 List.of(new DestinoPlanilla(6, 1)));
 
         try (ZipFile zipFile = new ZipFile(zip)) {
@@ -74,6 +80,45 @@ class GeneratePlanillaDetalleZipUseCaseImplTest {
         verify(planillaDetalle, never()).generatePlanillaDetalle(6, 38, 1);
     }
 
+    // protects=el origen BORRADORES usa sus generadores y nombra las entradas; fails_when=usa los generadores de
+    // chequeras o conserva el prefijo detalle-cuotas; no_claim=no prueba el contenido interno del XLSX.
+    @Test
+    void usaLosGeneradoresDeBorradorYNombraLasEntradasConSuPrefijo() throws Exception {
+        String horizontal = archivo("borrador-h.xlsx", "borrador-horizontal");
+        String vertical = archivo("borrador-v.xlsx", "borrador-vertical");
+        when(planillaBorrador.generatePlanillaBorrador(14, 38, 1)).thenReturn(horizontal);
+        when(planillaBorradorVertical.generatePlanillaBorrador(14, 38, 2)).thenReturn(vertical);
+
+        String zipHorizontal = useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL,
+                OrigenPlanilla.BORRADORES, List.of(new DestinoPlanilla(14, 1)));
+        String zipVertical = useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.VERTICAL,
+                OrigenPlanilla.BORRADORES, List.of(new DestinoPlanilla(14, 2)));
+
+        try (ZipFile zipFile = new ZipFile(zipHorizontal)) {
+            assertThat(contenido(zipFile, "detalle-borradores-14-38-1.xlsx")).isEqualTo("borrador-horizontal");
+        }
+        try (ZipFile zipFile = new ZipFile(zipVertical)) {
+            assertThat(contenido(zipFile, "detalle-borradores-14-38-2.xlsx")).isEqualTo("borrador-vertical");
+        }
+        verifyNoInteractions(planillaDetalle, planillaDetalleVertical);
+    }
+
+    // protects=un origen ausente se interpreta como chequeras (compatibilidad del contrato); fails_when=falla con
+    // null o usa los generadores de borradores; no_claim=no valida el nombre del ZIP temporal.
+    @Test
+    void unOrigenAusenteSeInterpretaComoChequeras() throws Exception {
+        String archivo = archivo("sin-origen.xlsx", "chequeras");
+        when(planillaDetalle.generatePlanillaDetalle(6, 38, 1)).thenReturn(archivo);
+
+        String zip = useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL, null,
+                List.of(new DestinoPlanilla(6, 1)));
+
+        try (ZipFile zipFile = new ZipFile(zip)) {
+            assertThat(contenido(zipFile, "detalle-cuotas-6-38-1.xlsx")).isEqualTo("chequeras");
+        }
+        verifyNoInteractions(planillaBorrador, planillaBorradorVertical);
+    }
+
     // protects=los destinos repetidos se deduplican; fails_when=genera dos entradas o llama dos veces al generador;
     // no_claim=no valida el orden de los destinos.
     @Test
@@ -81,7 +126,7 @@ class GeneratePlanillaDetalleZipUseCaseImplTest {
         String archivo = archivo("unico.xlsx", "unico");
         when(planillaDetalle.generatePlanillaDetalle(6, 38, 1)).thenReturn(archivo);
 
-        String zip = useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL,
+        String zip = useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL, OrigenPlanilla.CHEQUERAS,
                 List.of(new DestinoPlanilla(6, 1), new DestinoPlanilla(6, 1)));
 
         try (ZipFile zipFile = new ZipFile(zip)) {
@@ -94,9 +139,10 @@ class GeneratePlanillaDetalleZipUseCaseImplTest {
     // generador; no_claim=no valida el mensaje exacto.
     @Test
     void rechazaUnaSeleccionVacia() {
-        assertThatThrownBy(() -> useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL, List.of()))
+        assertThatThrownBy(() -> useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL,
+                OrigenPlanilla.CHEQUERAS, List.of()))
                 .isInstanceOf(IllegalArgumentException.class);
-        verifyNoInteractions(planillaDetalle, planillaDetalleVertical);
+        verifyNoInteractions(planillaDetalle, planillaDetalleVertical, planillaBorrador, planillaBorradorVertical);
     }
 
     // protects=rechaza más de 50 destinos; fails_when=acepta un pedido sin límite; no_claim=no mide tiempos reales.
@@ -106,9 +152,10 @@ class GeneratePlanillaDetalleZipUseCaseImplTest {
                 .mapToObj(geograficaId -> new DestinoPlanilla(6, geograficaId))
                 .toList();
 
-        assertThatThrownBy(() -> useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL, destinos))
+        assertThatThrownBy(() -> useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL,
+                OrigenPlanilla.BORRADORES, destinos))
                 .isInstanceOf(IllegalArgumentException.class);
-        verifyNoInteractions(planillaDetalle, planillaDetalleVertical);
+        verifyNoInteractions(planillaDetalle, planillaDetalleVertical, planillaBorrador, planillaBorradorVertical);
     }
 
     // protects=si falla un destino se propaga el error y se limpian los XLSX ya generados; fails_when=deja basura
@@ -120,7 +167,7 @@ class GeneratePlanillaDetalleZipUseCaseImplTest {
         when(planillaDetalle.generatePlanillaDetalle(6, 38, 2)).thenThrow(new IllegalStateException("boom"));
 
         assertThatThrownBy(() -> useCase.generatePlanillaDetalleZip(38, FormatoPlanilla.HORIZONTAL,
-                List.of(new DestinoPlanilla(6, 1), new DestinoPlanilla(6, 2))))
+                OrigenPlanilla.CHEQUERAS, List.of(new DestinoPlanilla(6, 1), new DestinoPlanilla(6, 2))))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("boom");
         assertThat(Path.of(primero)).doesNotExist();

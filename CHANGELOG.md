@@ -5,6 +5,20 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - 2026-11-24
+
+### Added
+
+- **feat(chequeras)**: planillas de **borradores abiertos** por facultad y sede, con layout propio (sin columnas de pagos): horizontal con una fila por borrador —estado, importe original, importe borrador, vencimiento y totales— y vertical con una fila por cuota, tres vencimientos y flags `pagado`/`baja`/`compensada`/`bloqueada`. Nuevos `GeneratePlanillaBorradorUseCase` y `GeneratePlanillaBorradorVerticalUseCase`, `BorradorRepository` con `BorradorClient` (`/api/tesoreria/core/emision/chequera/borradores`) y endpoints `GET /chequeras/planilla/detalle/borradores/...` (horizontal y vertical).
+- `GET /api/tesoreria/report/chequeras/planilla/detalle/borradores/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}` y `GET /api/tesoreria/report/chequeras/planilla/detalle/borradores/vertical/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}`: descargan `detalle-borradores.xlsx` con los borradores abiertos de la sede. La planilla horizontal arma una fila por borrador (y por cuota cuando un período tiene más de un producto) con estado, DU, apellido y nombre, facultad, sede, carrera, curso, tipo de chequera, tipo de arancel, HPUM, beca y alternativa, más una columna por período con producto, importe original, importe borrador y vencimiento, y los totales original/borrador. La vertical arma una fila por cuota con las mismas columnas fijas, producto, cuota, año, mes, importe original, importe borrador, tres vencimientos y los flags pagado, baja, compensada y bloqueada. Los datos salen del core tal como los expone; el report no calcula ni reordena importes.
+- **feat(chequeras)**: `POST /chequeras/planilla/detalle/zip` acepta `origen` (`CHEQUERAS` por defecto, `BORRADORES`), usa los generadores correspondientes y devuelve `detalle-borradores-{lectivoId}-{formato}.zip` con entradas `detalle-borradores-{facultadId}-{lectivoId}-{geograficaId}.xlsx`. Los XLSX se escriben en temporales únicos y se borran al comprimir.
+- Modelo de dominio `Borrador`, `BorradorCuota`, `BorradorAlternativa`, `BorradorArancelTipo` y `OrigenPlanilla`, con su mapeo desde `BorradorDto` en `ChequerasMapper` y el adaptador `FeignBorradorRepositoryAdapter`.
+- Tests: `GeneratePlanillaBorradorUseCaseImplTest` (una fila por borrador con importes original/borrador), `GeneratePlanillaBorradorVerticalUseCaseImplTest` (una fila por cuota con importes, vencimientos y flags), y casos nuevos en `GeneratePlanillaDetalleZipUseCaseImplTest` y `ChequerasReportControllerZipTest` (origen `BORRADORES`, nombre del ZIP y del archivo).
+
+### Changed
+
+- `GeneratePlanillaDetalleZipUseCase` y `ChequerasReportService.generatePlanillaDetalleZip` reciben `OrigenPlanilla`; `PlanillaDetalleZipRequest` incorpora `origen` como campo opcional, por lo que las solicitudes existentes siguen respondiendo `detalle-cuotas-{lectivoId}-{formato}.zip` sin cambios.
+
 ## [0.18.0] - 2026-11-13
 
 ### Added

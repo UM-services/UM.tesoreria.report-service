@@ -2,7 +2,7 @@
 # UM.tesoreria.report-service
 
 [![Java](https://img.shields.io/badge/Java-25-blue)](https://www.java.com/)
-[![Version](https://img.shields.io/badge/Version-0.16.0-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
+[![Version](https://img.shields.io/badge/Version-0.19.0-blue)](https://github.com/UM-services/UM.tesoreria.report-service)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.2-brightgreen)](https://spring.io/projects/spring-boot)
 [![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2025.1.4-brightgreen)](https://spring.io/projects/spring-cloud)
 [![SpringDoc OpenAPI](https://img.shields.io/badge/SpringDoc%20OpenAPI-3.1.1-blue)](https://springdoc.org/)
@@ -26,7 +26,8 @@ Servicio de generación de reportes y documentos para UM Tesorería. Este micros
 
 - Generación de reportes Excel de chequeras y planillas (incluye columnas HPUM, Beca e ID Mercado Pago)
 - Generación de planillas de detalle por sede (geográfica): horizontal y vertical
-- Descarga en un ZIP de varias planillas de detalle (horizontal o vertical) para una lista de facultades y sedes, con hasta 50 destinos por pedido
+- Planillas de borradores abiertos por sede (geográfica): horizontal (una fila por borrador) y vertical (una fila por cuota), sin columnas de pagos
+- Descarga en un ZIP de varias planillas de detalle (horizontal o vertical) para una lista de facultades y sedes, con hasta 50 destinos por pedido; el ZIP puede armarse con chequeras emitidas o con borradores abiertos
 - Planillas de pagos con información de contacto (emails institucional y personal)
 - Generación de planilla de "Lectivo Total Imputación" desde el módulo contable
 - Generación de PDF "Estado de Chequera" (dos hojas: cuotas por producto con subtotales y débitos automáticos agrupados por tipo)
@@ -131,6 +132,22 @@ Las pruebas automáticas usan datos ficticios. `MateriasInscriptasHttpContractTe
 simulado y overrides de URL locales; no es un E2E. Las pruebas reales se documentan aparte y no se
 incluyen en la suite. No guardar respuestas ni PDFs con datos personales en el repositorio.
 
+### Planillas de borradores abiertos
+
+`GET /api/tesoreria/report/chequeras/planilla/detalle/borradores/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}`
+
+`GET /api/tesoreria/report/chequeras/planilla/detalle/borradores/vertical/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}`
+
+Ambas descargan `detalle-borradores.xlsx` con los borradores abiertos de la sede, consultados al core
+en `/api/tesoreria/core/emision/chequera/borradores/sede/facultad/{facultadId}/lectivo/{lectivoId}/geografica/{geograficaId}`.
+La planilla horizontal arma una fila por borrador (y por cuota cuando un período tiene más de un producto)
+con estado, DU, apellido y nombre, facultad, sede, carrera, curso, tipo de chequera, tipo de arancel, HPUM, beca y
+alternativa, más una columna por período con producto, importe original, importe borrador y vencimiento,
+y los totales original/borrador. La vertical arma una fila por cuota con las mismas columnas fijas,
+producto, cuota, año, mes, importe original, importe borrador, tres vencimientos y los flags pagado, baja,
+compensada y bloqueada. Como un borrador todavía no tiene pagos, ninguna de las dos planillas incluye
+columnas de pagos, y los importes se muestran tal como los informa el core.
+
 ### ZIP de planillas de detalle
 
 `POST /api/tesoreria/report/chequeras/planilla/detalle/zip`
@@ -139,6 +156,7 @@ incluyen en la suite. No guardar respuestas ni PDFs con datos personales en el r
 {
   "lectivoId": 38,
   "formato": "HORIZONTAL",
+  "origen": "CHEQUERAS",
   "destinos": [
     { "facultadId": 6, "geograficaId": 1 },
     { "facultadId": 6, "geograficaId": 2 }
@@ -148,7 +166,10 @@ incluyen en la suite. No guardar respuestas ni PDFs con datos personales en el r
 
 Descarga `detalle-cuotas-{lectivoId}-{formato}.zip` (`application/zip`) con una planilla
 `detalle-cuotas-{facultadId}-{lectivoId}-{geograficaId}.xlsx` por destino. `formato` acepta `HORIZONTAL`
-o `VERTICAL` y reutiliza los generadores de la planilla de detalle. `destinos` debe tener entre 1 y 50
-elementos; los repetidos se deduplican. Una solicitud inválida responde `400 Bad Request`. Los XLSX
-temporales se eliminan después de copiarse al ZIP, y el ZIP se borra al terminar la descarga o si falla
-la generación.
+o `VERTICAL` y reutiliza los generadores de la planilla de detalle. `origen` es opcional y acepta
+`CHEQUERAS` (valor por defecto) o `BORRADORES`; con `BORRADORES` el ZIP se llama
+`detalle-borradores-{lectivoId}-{formato}.zip` y sus entradas
+`detalle-borradores-{facultadId}-{lectivoId}-{geograficaId}.xlsx`, armadas con los generadores de
+borradores. `destinos` debe tener entre 1 y 50 elementos; los repetidos se deduplican. Una solicitud
+inválida responde `400 Bad Request`. Los XLSX temporales se eliminan después de copiarse al ZIP, y el
+ZIP se borra al terminar la descarga o si falla la generación.
